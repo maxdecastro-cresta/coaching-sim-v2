@@ -1,6 +1,6 @@
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export function ThemeDemo() {
   return (
@@ -17,7 +17,10 @@ export function ThemeDemo() {
           <TabsContent value="account" className="p-4 border rounded-md mt-2">
             <div className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-content-primary mb-1">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-content-primary mb-1"
+                >
                   Name
                 </label>
                 <input
@@ -28,7 +31,10 @@ export function ThemeDemo() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-content-primary mb-1">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-content-primary mb-1"
+                >
                   Email
                 </label>
                 <input
@@ -38,15 +44,16 @@ export function ThemeDemo() {
                   placeholder="Enter your email"
                 />
               </div>
-              <button className="px-4 py-2 rounded-md bg-primary-6 text-white">
-                Save changes
-              </button>
+              <button className="px-4 py-2 rounded-md bg-primary-6 text-white">Save changes</button>
             </div>
           </TabsContent>
           <TabsContent value="password" className="p-4 border rounded-md mt-2">
             <div className="space-y-4">
               <div>
-                <label htmlFor="current" className="block text-sm font-medium text-content-primary mb-1">
+                <label
+                  htmlFor="current"
+                  className="block text-sm font-medium text-content-primary mb-1"
+                >
                   Current password
                 </label>
                 <input
@@ -57,7 +64,10 @@ export function ThemeDemo() {
                 />
               </div>
               <div>
-                <label htmlFor="new" className="block text-sm font-medium text-content-primary mb-1">
+                <label
+                  htmlFor="new"
+                  className="block text-sm font-medium text-content-primary mb-1"
+                >
                   New password
                 </label>
                 <input
@@ -126,21 +136,43 @@ export function ThemeDemo() {
           <h3 className="text-lg font-semibold text-content-primary mb-3">Background Colors</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <div className="h-12 rounded bg-bg-surface border flex items-center justify-center text-xs">Surface</div>
-              <div className="h-12 rounded bg-bg-elevation border flex items-center justify-center text-xs">Elevation</div>
-              <div className="h-12 rounded bg-bg-section border flex items-center justify-center text-xs">Section</div>
+              <div className="h-12 rounded bg-bg-surface border flex items-center justify-center text-xs">
+                Surface
+              </div>
+              <div className="h-12 rounded bg-bg-elevation border flex items-center justify-center text-xs">
+                Elevation
+              </div>
+              <div className="h-12 rounded bg-bg-section border flex items-center justify-center text-xs">
+                Section
+              </div>
             </div>
             <div className="space-y-2">
-              <div className="h-12 rounded bg-bg-action border flex items-center justify-center text-xs text-white">Action</div>
-              <div className="h-12 rounded bg-bg-action-hover border flex items-center justify-center text-xs text-white">Action Hover</div>
-              <div className="h-12 rounded bg-bg-light border flex items-center justify-center text-xs">Light</div>
-              <div className="h-12 rounded bg-bg-light-hover border flex items-center justify-center text-xs">Light Hover</div>
+              <div className="h-12 rounded bg-bg-action border flex items-center justify-center text-xs text-white">
+                Action
+              </div>
+              <div className="h-12 rounded bg-bg-action-hover border flex items-center justify-center text-xs text-white">
+                Action Hover
+              </div>
+              <div className="h-12 rounded bg-bg-light border flex items-center justify-center text-xs">
+                Light
+              </div>
+              <div className="h-12 rounded bg-bg-light-hover border flex items-center justify-center text-xs">
+                Light Hover
+              </div>
             </div>
             <div className="space-y-2">
-              <div className="h-12 rounded bg-bg-positive border flex items-center justify-center text-xs">Positive</div>
-              <div className="h-12 rounded bg-bg-warning border flex items-center justify-center text-xs">Warning</div>
-              <div className="h-12 rounded bg-bg-negative border flex items-center justify-center text-xs">Negative</div>
-              <div className="h-12 rounded bg-bg-disabled border flex items-center justify-center text-xs">Disabled</div>
+              <div className="h-12 rounded bg-bg-positive border flex items-center justify-center text-xs">
+                Positive
+              </div>
+              <div className="h-12 rounded bg-bg-warning border flex items-center justify-center text-xs">
+                Warning
+              </div>
+              <div className="h-12 rounded bg-bg-negative border flex items-center justify-center text-xs">
+                Negative
+              </div>
+              <div className="h-12 rounded bg-bg-disabled border flex items-center justify-center text-xs">
+                Disabled
+              </div>
             </div>
           </div>
         </div>
@@ -150,20 +182,32 @@ export function ThemeDemo() {
           <h3 className="text-lg font-semibold text-content-primary mb-3">Border Colors</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-default flex items-center justify-center text-xs">Default</div>
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-controls flex items-center justify-center text-xs">Controls</div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-default flex items-center justify-center text-xs">
+                Default
+              </div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-controls flex items-center justify-center text-xs">
+                Controls
+              </div>
             </div>
             <div className="space-y-2">
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-action flex items-center justify-center text-xs">Action</div>
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-positive flex items-center justify-center text-xs">Positive</div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-action flex items-center justify-center text-xs">
+                Action
+              </div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-positive flex items-center justify-center text-xs">
+                Positive
+              </div>
             </div>
             <div className="space-y-2">
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-warning flex items-center justify-center text-xs">Warning</div>
-              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-negative flex items-center justify-center text-xs">Negative</div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-warning flex items-center justify-center text-xs">
+                Warning
+              </div>
+              <div className="h-12 rounded bg-white dark:bg-dark-7 border-2 border-border-negative flex items-center justify-center text-xs">
+                Negative
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

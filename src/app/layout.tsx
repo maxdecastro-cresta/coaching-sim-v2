@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import { inter } from "./fonts";
-import "./globals.css";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import type { Metadata } from 'next';
+import { inter } from './fonts';
+import './globals.css';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 export const metadata: Metadata = {
-  title: "Design System Demo",
-  description: "Demo of a design system with theme switching using Shadcn UI",
+  title: 'Design System Demo',
+  description: 'Demo of a design system with theme switching using Shadcn UI',
 };
 
 export default function RootLayout({
@@ -22,9 +22,7 @@ export default function RootLayout({
             <ThemeSwitcher />
           </div>
         </header>
-        <main className="min-h-screen pb-8">
-          {children}
-        </main>
+        <main className="min-h-screen pb-8">{children}</main>
       </body>
     </html>
   );
