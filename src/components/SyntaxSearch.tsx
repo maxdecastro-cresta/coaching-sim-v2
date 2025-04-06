@@ -9,38 +9,221 @@ const variableCategories = [
   {
     category: "Metadata",
     options: [
-      { id: 'metadata.type1', label: 'Metadata type' },
-      { id: 'metadata.type2', label: 'Metadata type' },
-      { id: 'metadata.type3', label: 'Metadata type' },
-      { id: 'metadata.type4', label: 'Metadata type' }
+      { id: 'account_status', label: 'account_status' },
+      { id: 'agent browser info', label: 'agent browser info' },
+      { id: 'agent device info', label: 'agent device info' },
+      { id: 'agent_id', label: 'agent_id' },
+      { id: 'agent_name', label: 'agent_name' },
+      { id: 'agree_auth', label: 'agree_auth' },
+      { id: 'api_version', label: 'api_version' },
+      { id: 'auth_method', label: 'auth_method' },
+      { id: 'auth_provider', label: 'auth_provider' },
+      { id: 'billing_cycle', label: 'billing_cycle' },
+      { id: 'browser_type', label: 'browser_type' },
+      { id: 'browser_version', label: 'browser_version' },
+      { id: 'call_duration', label: 'call_duration' },
+      { id: 'call_start_time', label: 'call_start_time' },
+      { id: 'client_ip', label: 'client_ip' },
+      { id: 'connection_type', label: 'connection_type' },
+      { id: 'consent_version', label: 'consent_version' },
+      { id: 'cookie_id', label: 'cookie_id' },
+      { id: 'customer_account_id', label: 'customer_account_id' },
+      { id: 'customer_email', label: 'customer_email' },
+      { id: 'customer_phone', label: 'customer_phone' },
+      { id: 'customer_tier', label: 'customer_tier' },
+      { id: 'department_id', label: 'department_id' },
+      { id: 'device_manufacturer', label: 'device_manufacturer' },
+      { id: 'device_model', label: 'device_model' },
+      { id: 'experiment_id', label: 'experiment_id' },
+      { id: 'feature_flags', label: 'feature_flags' },
+      { id: 'language_code', label: 'language_code' },
+      { id: 'last_login_date', label: 'last_login_date' },
+      { id: 'locale_setting', label: 'locale_setting' },
+      { id: 'marketing_opt_in', label: 'marketing_opt_in' },
+      { id: 'network_latency', label: 'network_latency' },
+      { id: 'notification_pref', label: 'notification_pref' },
+      { id: 'os_type', label: 'os_type' },
+      { id: 'page_load_time', label: 'page_load_time' },
+      { id: 'platform_version', label: 'platform_version' },
+      { id: 'privacy_version', label: 'privacy_version' },
+      { id: 'referrer_url', label: 'referrer_url' },
+      { id: 'region_code', label: 'region_code' },
+      { id: 'registration_date', label: 'registration_date' },
+      { id: 'screen_resolution', label: 'screen_resolution' },
+      { id: 'server_node', label: 'server_node' },
+      { id: 'session_id', label: 'session_id' },
+      { id: 'subscription_status', label: 'subscription_status' },
+      { id: 'terms_version', label: 'terms_version' },
+      { id: 'timestamp', label: 'timestamp' },
+      { id: 'timezone_offset', label: 'timezone_offset' },
+      { id: 'transaction_id', label: 'transaction_id' },
+      { id: 'user_agent', label: 'user_agent' },
+      { id: 'visit_count', label: 'visit_count' }
     ]
   },
   {
     category: "Entity",
     options: [
-      { id: 'entity.type1', label: 'Entity type' },
-      { id: 'entity.type2', label: 'Entity type' },
-      { id: 'entity.type3', label: 'Entity type' },
-      { id: 'entity.type4', label: 'Entity type' },
-      { id: 'entity.type5', label: 'Entity type' }
+      { id: 'Accessibility issue', label: 'Accessibility issue' },
+      { id: 'Account issue', label: 'Account issue' },
+      { id: 'Acme entity error', label: 'Acme entity error' },
+      { id: 'Acme trouble condition', label: 'Acme trouble condition' },
+      { id: 'Acme warning', label: 'Acme warning' },
+      { id: 'API response error', label: 'API response error' },
+      { id: 'Authentication error', label: 'Authentication error' },
+      { id: 'Authorization error', label: 'Authorization error' },
+      { id: 'Bank account', label: 'Bank account' },
+      { id: 'Billing address', label: 'Billing address' },
+      { id: 'Billing issue', label: 'Billing issue' },
+      { id: 'Bug report', label: 'Bug report' },
+      { id: 'Compatibility issue', label: 'Compatibility issue' },
+      { id: 'Configuration error', label: 'Configuration error' },
+      { id: 'Content issue', label: 'Content issue' },
+      { id: 'Credit card', label: 'Credit card' },
+      { id: 'Data integration error', label: 'Data integration error' },
+      { id: 'Database error', label: 'Database error' },
+      { id: 'Debit card', label: 'Debit card' },
+      { id: 'Digital wallet', label: 'Digital wallet' },
+      { id: 'Documentation issue', label: 'Documentation issue' },
+      { id: 'Driver version', label: 'Driver version' },
+      { id: 'Enhancement suggestion', label: 'Enhancement suggestion' },
+      { id: 'Feature request', label: 'Feature request' },
+      { id: 'Firmware version', label: 'Firmware version' },
+      { id: 'Gift card', label: 'Gift card' },
+      { id: 'Hardware model', label: 'Hardware model' },
+      { id: 'Interface error', label: 'Interface error' },
+      { id: 'Issue category', label: 'Issue category' },
+      { id: 'Localization issue', label: 'Localization issue' },
+      { id: 'Media playback issue', label: 'Media playback issue' },
+      { id: 'Network error', label: 'Network error' },
+      { id: 'Order number', label: 'Order number' },
+      { id: 'Payment method', label: 'Payment method' },
+      { id: 'Performance issue', label: 'Performance issue' },
+      { id: 'Plugin compatibility', label: 'Plugin compatibility' },
+      { id: 'Product category', label: 'Product category' },
+      { id: 'Product model', label: 'Product model' },
+      { id: 'Product SKU', label: 'Product SKU' },
+      { id: 'Reward points', label: 'Reward points' },
+      { id: 'Security alert', label: 'Security alert' },
+      { id: 'Service outage', label: 'Service outage' },
+      { id: 'Shipping address', label: 'Shipping address' },
+      { id: 'Software version', label: 'Software version' },
+      { id: 'Subscription plan', label: 'Subscription plan' },
+      { id: 'System error', label: 'System error' },
+      { id: 'Technical issue', label: 'Technical issue' },
+      { id: 'Transaction status', label: 'Transaction status' },
+      { id: 'User interface issue', label: 'User interface issue' },
+      { id: 'Validation error', label: 'Validation error' }
     ]
   },
   {
     category: "Summarization topic",
     options: [
-      { id: 'entity.type6', label: 'Summarization topic type' },
-      { id: 'entity.type7', label: 'Summarization topic type' },
-      { id: 'entity.type8', label: 'Summarization topic type' },
-      { id: 'entity.type9', label: 'Summarization topic type' }
+      { id: 'Account management', label: 'Account management' },
+      { id: 'Account security', label: 'Account security' },
+      { id: 'Account upgrades', label: 'Account upgrades' },
+      { id: 'Account verification', label: 'Account verification' },
+      { id: 'Appointment scheduling', label: 'Appointment scheduling' },
+      { id: 'Billing inquiries', label: 'Billing inquiries' },
+      { id: 'Career opportunities', label: 'Career opportunities' },
+      { id: 'Cloud storage', label: 'Cloud storage' },
+      { id: 'Compatibility questions', label: 'Compatibility questions' },
+      { id: 'Complaint handling', label: 'Complaint handling' },
+      { id: 'Corporate information', label: 'Corporate information' },
+      { id: 'Data backup', label: 'Data backup' },
+      { id: 'Data management', label: 'Data management' },
+      { id: 'Device synchronization', label: 'Device synchronization' },
+      { id: 'Discount inquiries', label: 'Discount inquiries' },
+      { id: 'Event information', label: 'Event information' },
+      { id: 'Feature requests', label: 'Feature requests' },
+      { id: 'Finances', label: 'Finances' },
+      { id: 'Installation help', label: 'Installation help' },
+      { id: 'Investor relations', label: 'Investor relations' },
+      { id: 'Legal inquiries', label: 'Legal inquiries' },
+      { id: 'Locks', label: 'Locks' },
+      { id: 'Loyalty program', label: 'Loyalty program' },
+      { id: 'Media inquiries', label: 'Media inquiries' },
+      { id: 'Membership benefits', label: 'Membership benefits' },
+      { id: 'Opening hours', label: 'Opening hours' },
+      { id: 'Order status', label: 'Order status' },
+      { id: 'Partnership inquiries', label: 'Partnership inquiries' },
+      { id: 'Password reset', label: 'Password reset' },
+      { id: 'Payment processing', label: 'Payment processing' },
+      { id: 'Pricing questions', label: 'Pricing questions' },
+      { id: 'Privacy concerns', label: 'Privacy concerns' },
+      { id: 'Product availability', label: 'Product availability' },
+      { id: 'Product feedback', label: 'Product feedback' },
+      { id: 'Product information', label: 'Product information' },
+      { id: 'Promotional offers', label: 'Promotional offers' },
+      { id: 'Returns and refunds', label: 'Returns and refunds' },
+      { id: 'Service booking', label: 'Service booking' },
+      { id: 'Service outages', label: 'Service outages' },
+      { id: 'Shipping information', label: 'Shipping information' },
+      { id: 'Software licenses', label: 'Software licenses' },
+      { id: 'Store locations', label: 'Store locations' },
+      { id: 'Subscription changes', label: 'Subscription changes' },
+      { id: 'Technical support', label: 'Technical support' },
+      { id: 'Terms of service', label: 'Terms of service' },
+      { id: 'Troubleshooting steps', label: 'Troubleshooting steps' },
+      { id: 'Update issues', label: 'Update issues' },
+      { id: 'User training', label: 'User training' },
+      { id: 'Warranty claims', label: 'Warranty claims' },
+      { id: 'Weather', label: 'Weather' }
     ]
   },
   {
     category: "Conversation info",
     options: [
-      { id: 'positive-moment', label: 'positive-moment' },
-      { id: 'sentiment', label: 'sentiment' },
+      { id: 'agent-performance', label: 'agent-performance' },
+      { id: 'authentication-success', label: 'authentication-success' },
+      { id: 'callback-promise', label: 'callback-promise' },
+      { id: 'call-quality', label: 'call-quality' },
+      { id: 'closing-quality', label: 'closing-quality' },
+      { id: 'compliance-issue', label: 'compliance-issue' },
+      { id: 'confidentiality-breach', label: 'confidentiality-breach' },
+      { id: 'conversation-flow', label: 'conversation-flow' },
+      { id: 'cross-selling-opportunity', label: 'cross-selling-opportunity' },
+      { id: 'customer-appreciation', label: 'customer-appreciation' },
+      { id: 'customer-churn-risk', label: 'customer-churn-risk' },
+      { id: 'customer-confusion', label: 'customer-confusion' },
+      { id: 'customer-education', label: 'customer-education' },
+      { id: 'customer-frustration', label: 'customer-frustration' },
+      { id: 'customer-satisfaction', label: 'customer-satisfaction' },
+      { id: 'empathy-shown', label: 'empathy-shown' },
+      { id: 'escalation-needed', label: 'escalation-needed' },
+      { id: 'first-contact-resolution', label: 'first-contact-resolution' },
+      { id: 'follow-up-required', label: 'follow-up-required' },
+      { id: 'greeting-quality', label: 'greeting-quality' },
+      { id: 'hold-duration', label: 'hold-duration' },
+      { id: 'information-completeness', label: 'information-completeness' },
+      { id: 'interruptions', label: 'interruptions' },
+      { id: 'knowledge-gap', label: 'knowledge-gap' },
+      { id: 'language-clarity', label: 'language-clarity' },
       { id: 'negative-moment', label: 'negative-moment' },
-      { id: 'other-moment', label: 'other-moment' }
+      { id: 'other-moment', label: 'other-moment' },
+      { id: 'policy-exceptions', label: 'policy-exceptions' },
+      { id: 'positive-moment', label: 'positive-moment' },
+      { id: 'previous-case-reference', label: 'previous-case-reference' },
+      { id: 'process-deviation', label: 'process-deviation' },
+      { id: 'regulatory-mention', label: 'regulatory-mention' },
+      { id: 'repeat-contact', label: 'repeat-contact' },
+      { id: 'resolution-status', label: 'resolution-status' },
+      { id: 'resolution-time', label: 'resolution-time' },
+      { id: 'response-time', label: 'response-time' },
+      { id: 'retention-opportunity', label: 'retention-opportunity' },
+      { id: 'script-adherence', label: 'script-adherence' },
+      { id: 'sensitive-information', label: 'sensitive-information' },
+      { id: 'sentiment', label: 'sentiment' },
+      { id: 'silence-periods', label: 'silence-periods' },
+      { id: 'solution-effectiveness', label: 'solution-effectiveness' },
+      { id: 'special-accommodations', label: 'special-accommodations' },
+      { id: 'talking-speed', label: 'talking-speed' },
+      { id: 'technical-accuracy', label: 'technical-accuracy' },
+      { id: 'topic-change', label: 'topic-change' },
+      { id: 'transfer-count', label: 'transfer-count' },
+      { id: 'upselling-opportunity', label: 'upselling-opportunity' },
+      { id: 'verification-failure', label: 'verification-failure' },
+      { id: 'voice-tone', label: 'voice-tone' }
     ]
   }
 ];
@@ -128,9 +311,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       const matchedText = match[0];
       const startIndex = match.index;
       
-      // Add text before the match
+      // Add text before the match with primary text color
       if (startIndex > lastIndex) {
-        parts.push(text.substring(lastIndex, startIndex));
+        parts.push(`<span class="text-content-primary">${text.substring(lastIndex, startIndex)}</span>`);
       }
       
       // Determine if we should highlight this match in pink
@@ -147,9 +330,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       lastIndex = startIndex + matchedText.length;
     }
     
-    // Add any remaining text
+    // Add any remaining text with primary text color
     if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
+      parts.push(`<span class="text-content-primary">${text.substring(lastIndex)}</span>`);
     }
     
     return parts.join('');
@@ -187,7 +370,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       
       // Insert the silhouette after the formatted HTML for the text before cursor
       formattedHtml = beforeCursorHtml + 
-                      `<span class="text-gray-400">${getSilhouetteText()}</span>` + 
+                      `<span class="text-content-placeholder">${getSilhouetteText()}</span>` + 
                       formattedHtml.substring(beforeCursorHtml.length);
     }
     
@@ -790,7 +973,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     <div className={`${className} flex flex-col items-center justify-center w-full max-w-3xl mx-auto p-4`}>
       <div className="relative w-full max-w-[400px] mx-auto">
         {/* The textarea and highlighting container */}
-        <div className="relative bg-bg-surface border border-controls rounded-base">
+        <div className="relative bg-bg-surface border border-border-controls rounded-base">
           {/* The actual textarea for input */}
           <Textarea 
             ref={textAreaRef}
@@ -810,7 +993,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           
           {/* Display layer with highlighted text and silhouette directly in the HTML */}
           <div 
-            className="absolute top-0 left-0 right-0 bottom-0 whitespace-pre-wrap overflow-hidden pointer-events-none p-3 body-regular-text"
+            className="absolute top-0 left-0 right-0 bottom-0 whitespace-pre-wrap overflow-hidden pointer-events-none p-3 body-regular-text text-content-primary"
             dangerouslySetInnerHTML={{ 
               __html: value 
                 ? formatTextWithSilhouette() 
@@ -851,10 +1034,10 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                       return (
                         <button 
                           key={`nav-${originalCategory.category}`}
-                          className={`text-left text-sm py-2 px-2 rounded font-medium ${
+                          className={`text-left body-regular-text py-2 px-2 rounded ${
                             isDisabled
-                              ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-gray-800 hover:bg-bg-elevation'
+                              ? 'text-content-placeholder cursor-not-allowed'
+                              : 'text-content-primary hover:bg-bg-elevation'
                           }`}
                           onClick={() => !isDisabled && scrollToCategory(index)}
                           disabled={isDisabled ? true : false}
@@ -867,21 +1050,21 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                 </div>
                 
                 {/* Main content area */}
-                <div className="flex-1 overflow-y-auto max-h-80 pt-2" ref={dropdownRef}>
+                <div className="flex-1 overflow-y-auto max-h-80 pt-2 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-border-controls hover:scrollbar-thumb-content-secondary scrollbar-track-transparent bg-bg-controls" ref={dropdownRef}>
                   {/* Check if there are any filtered options to display */}
                   {filteredOptions.length > 0 && filteredOptions.some(category => category.options.length > 0) ? (
                     /* Content sections without sticky headers */
                     filteredOptions.map((category, categoryIndex) => (
                       <div 
                         key={`category-${categoryIndex}`} 
-                        className={`category-section ${categoryIndex > 0 ? 'mt-4' : ''}`}
+                        className={`category-section ${categoryIndex > 0 ? 'mt-4 text-content-secondary' : 'text-content-secondary'}`}
                         ref={el => {
                           categoryRefs.current[categoryIndex] = el;
                         }}
                       >
                         {/* Regular header without sticky positioning or border */}
                         <div className="px-4 py-1 flex justify-between">
-                          <span className="body-small-text">{category.category}</span>
+                          <span className="body-small-text text-content-primary">{category.category}</span>
                         </div>
                         
                         {/* Options for this category */}
@@ -896,7 +1079,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                               ref={isFirstItem ? firstMenuItemRef : null}
                               data-category-index={categoryIndex}
                               data-option-index={optionIndex}
-                              className={`px-4 py-2 cursor-pointer text-gray-600 outline-none ${
+                              className={`px-4 py-2 cursor-pointer text-content-secondaryoutline-none ${
                                 isFocused ? 'bg-bg-elevation' : 'hover:bg-bg-elevation'
                               }`}
                               onClick={() => selectVariable(option)}
@@ -912,9 +1095,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                   ) : (
                     /* Empty state display - shown when no variables match the search */
                     <div className="flex items-center justify-center h-full">
-                      <div className="text-center text-gray-900 font-bold py-10">
-                        <div className="uppercase tracking-wide text-base">EMPTY STATE</div>
-                        <div className="uppercase tracking-wide text-base">ADD HERE</div>
+                      <div className="text-center text-content-primary font-bold py-10">
+                        <div className="uppercase tracking-wide element-regular-text">EMPTY STATE</div>
+                        <div className="uppercase tracking-wide body-small-text">ADD HERE</div>
                       </div>
                     </div>
                   )}
@@ -922,9 +1105,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
               </div>
               
               {/* Manage variables button - now outside and full width */}
-              <div className="text-blue-600 text-sm py-3 px-4 font-medium cursor-pointer flex items-center justify-between border-t border-controls">
+              <div className="text-content-action element-small-text py-2 px-4 cursor-pointer flex items-center justify-end border-t border-controls">
                 Manage variables
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-content-action ml-2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </div>
