@@ -305,8 +305,10 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             const suggestion = groupedResults[0].options[0].id;
             setSilhouetteSuggestion(suggestion);
           } else {
+            // No results found
             setFocusedItemIndices(null);
             setSilhouetteSuggestion(null);
+            console.log('No matching variables found for search:', term);
           }
         } else {
           setFilteredOptions(variableCategories);
@@ -592,6 +594,15 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     }
   }, [focusedItemIndices, showVariables, filteredOptions]);
 
+  // Debug empty state detection
+  useEffect(() => {
+    // Log when we would show the empty state
+    const hasResults = filteredOptions.length > 0 && filteredOptions.some(category => category.options.length > 0);
+    if (showVariables && !hasResults && searchTerm) {
+      console.log('Empty state shown: No results found for search term:', searchTerm);
+    }
+  }, [filteredOptions, showVariables, searchTerm]);
+
   // Calculate if we should show silhouette and what text to show
   const getSilhouetteText = () => {
     if (!showVariables || !silhouetteSuggestion || !silhouettePosition || activeAtIndex === null) {
@@ -660,83 +671,95 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
               <div className="flex flex-row h-80">
                 {/* Left side navigation with text links */}
                 <div className="w-48 border-r border-controls flex flex-col py-2 px-2">
-                  <button 
-                    className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                    onClick={() => scrollToCategory(0)}
-                  >
-                    Metadata
-                  </button>
-                  <button 
-                    className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                    onClick={() => scrollToCategory(1)}
-                  >
-                    Entity
-                  </button>
-                  <button 
-                    className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                    onClick={() => scrollToCategory(2)}
-                  >
-                    Summarization topic
-                  </button>
-                  <button 
-                    className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                    onClick={() => scrollToCategory(3)}
-                  >
-                    Conversation info
-                  </button>
-                  <div className="flex-grow"></div>
+                  <div className="flex flex-col flex-grow">
+                    <button 
+                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
+                      onClick={() => scrollToCategory(0)}
+                    >
+                      Metadata
+                    </button>
+                    <button 
+                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
+                      onClick={() => scrollToCategory(1)}
+                    >
+                      Entity
+                    </button>
+                    <button 
+                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
+                      onClick={() => scrollToCategory(2)}
+                    >
+                      Summarization topic
+                    </button>
+                    <button 
+                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
+                      onClick={() => scrollToCategory(3)}
+                    >
+                      Conversation info
+                    </button>
+                  </div>
+                  
+                  {/* Manage variables button - moved to left sidebar */}
+                  <div className="text-blue-600 text-sm py-3 px-2 font-medium cursor-pointer flex items-center justify-between border-t border-controls mt-auto">
+                    Manage variables
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
                 </div>
                 
                 {/* Main content area */}
                 <div className="flex-1 overflow-y-auto max-h-80 pt-2" ref={dropdownRef}>
-                  {/* Content sections without sticky headers */}
-                  {filteredOptions.map((category, categoryIndex) => (
-                    <div 
-                      key={`category-${categoryIndex}`} 
-                      className={`category-section ${categoryIndex > 0 ? 'mt-4' : ''}`}
-                      ref={el => {
-                        categoryRefs.current[categoryIndex] = el;
-                      }}
-                    >
-                      {/* Regular header without sticky positioning or border */}
-                      <div className="px-4 py-1 flex justify-between">
-                        <span className="body-small-text">{category.category}</span>
-                      </div>
-                      
-                      {/* Options for this category */}
-                      {category.options.map((option, optionIndex) => {
-                        const isFocused = focusedItemIndices?.categoryIndex === categoryIndex && 
-                                         focusedItemIndices?.optionIndex === optionIndex;
-                        const isFirstItem = categoryIndex === 0 && optionIndex === 0;
+                  {/* Check if there are any filtered options to display */}
+                  {filteredOptions.length > 0 && filteredOptions.some(category => category.options.length > 0) ? (
+                    /* Content sections without sticky headers */
+                    filteredOptions.map((category, categoryIndex) => (
+                      <div 
+                        key={`category-${categoryIndex}`} 
+                        className={`category-section ${categoryIndex > 0 ? 'mt-4' : ''}`}
+                        ref={el => {
+                          categoryRefs.current[categoryIndex] = el;
+                        }}
+                      >
+                        {/* Regular header without sticky positioning or border */}
+                        <div className="px-4 py-1 flex justify-between">
+                          <span className="body-small-text">{category.category}</span>
+                        </div>
                         
-                        return (
-                          <div
-                            key={`${categoryIndex}-${optionIndex}`}
-                            ref={isFirstItem ? firstMenuItemRef : null}
-                            data-category-index={categoryIndex}
-                            data-option-index={optionIndex}
-                            className={`px-4 py-2 cursor-pointer text-gray-600 outline-none ${
-                              isFocused ? 'bg-bg-elevation' : 'hover:bg-bg-elevation'
-                            }`}
-                            onClick={() => selectVariable(option)}
-                            tabIndex={isFocused ? 0 : -1}
-                            onMouseEnter={() => setFocusedItemIndices({ categoryIndex, optionIndex })}
-                          >
-                            <span className="body-regular-text truncate block overflow-hidden">{option.label}</span>
-                          </div>
-                        );
-                      })}
+                        {/* Options for this category */}
+                        {category.options.map((option, optionIndex) => {
+                          const isFocused = focusedItemIndices?.categoryIndex === categoryIndex && 
+                                          focusedItemIndices?.optionIndex === optionIndex;
+                          const isFirstItem = categoryIndex === 0 && optionIndex === 0;
+                          
+                          return (
+                            <div
+                              key={`${categoryIndex}-${optionIndex}`}
+                              ref={isFirstItem ? firstMenuItemRef : null}
+                              data-category-index={categoryIndex}
+                              data-option-index={optionIndex}
+                              className={`px-4 py-2 cursor-pointer text-gray-600 outline-none ${
+                                isFocused ? 'bg-bg-elevation' : 'hover:bg-bg-elevation'
+                              }`}
+                              onClick={() => selectVariable(option)}
+                              tabIndex={isFocused ? 0 : -1}
+                              onMouseEnter={() => setFocusedItemIndices({ categoryIndex, optionIndex })}
+                            >
+                              <span className="body-regular-text truncate block overflow-hidden">{option.label}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))
+                  ) : (
+                    /* Empty state display - shown when no variables match the search */
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center text-gray-900 font-bold py-10">
+                        <div className="uppercase tracking-wide text-base">EMPTY STATE</div>
+                        <div className="uppercase tracking-wide text-base">ADD HERE</div>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-              
-              {/* Manage variables button - fixed to the bottom */}
-              <div className="px-4 py-3 flex justify-between items-center border-t border-controls cursor-pointer mt-auto">
-                <span className="text-blue-600 text-sm font-medium">Manage variables</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
               </div>
             </div>
           </div>
