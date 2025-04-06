@@ -86,13 +86,48 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   const formatTextWithHighlights = (text: string) => {
     if (!text) return '';
 
+    // Special handling for active variable being typed
+    if (showVariables && activeAtIndex !== null && silhouettePosition !== null) {
+      // The text being actively typed should be highlighted in pink
+      const activeVarText = text.substring(activeAtIndex, silhouettePosition);
+      
+      // Only process this special case if we have an @ at the active position
+      if (activeVarText.startsWith('@')) {
+        const parts = [];
+        let currentIndex = 0;
+        
+        // Add text before the active variable
+        if (activeAtIndex > 0) {
+          parts.push(processTextSegment(text.substring(0, activeAtIndex)));
+        }
+        
+        // Add the active variable with pink highlighting
+        parts.push(`<span class="text-ext-pink-content">${activeVarText}</span>`);
+        
+        // Add text after the active variable
+        if (silhouettePosition < text.length) {
+          parts.push(processTextSegment(text.substring(silhouettePosition)));
+        }
+        
+        return parts.join('');
+      }
+    }
+    
+    // Regular processing for text without active variables
+    return processTextSegment(text);
+  };
+  
+  // Process a segment of text to find and format variable references
+  const processTextSegment = (text: string) => {
+    if (!text) return '';
+    
     // Process text to highlight @ mentions
     const atMentionRegex = /@[^@\s]*(?:@|$)/g;
     const parts = [];
     let lastIndex = 0;
     let match;
 
-    // Create a formatted version of the text where @ mentions are wrapped in spans with pink color
+    // Create a formatted version of the text where @ mentions are either highlighted pink or not
     while ((match = atMentionRegex.exec(text)) !== null) {
       const matchedText = match[0];
       const startIndex = match.index;
@@ -102,8 +137,16 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
         parts.push(text.substring(lastIndex, startIndex));
       }
       
-      // Add the matched text with pink highlighting
-      parts.push(`<span class="text-ext-pink-content">${matchedText}</span>`);
+      // Determine if we should highlight this match in pink
+      // Only complete variables that match our list should be highlighted
+      const shouldHighlight = isValidVariableReference(matchedText);
+      
+      // Add the matched text with appropriate highlighting
+      if (shouldHighlight) {
+        parts.push(`<span class="text-ext-pink-content">${matchedText}</span>`);
+      } else {
+        parts.push(matchedText);
+      }
       
       lastIndex = startIndex + matchedText.length;
     }
@@ -114,6 +157,23 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     }
     
     return parts.join('');
+  };
+
+  // Check if a match is a valid variable reference
+  const isValidVariableReference = (matchText: string) => {
+    // If it ends with @, it's a complete variable reference
+    if (matchText.endsWith('@') && matchText.startsWith('@')) {
+      // Make sure it has both start and end @ symbols
+      if (matchText.length < 3) return false; // Must be at least 3 chars (@X@)
+      
+      // Extract the variable ID without the @ symbols
+      const variableId = matchText.slice(1, -1);
+      
+      // Check if it exists in our variable options
+      return allVariableOptions.some(option => option.id === variableId);
+    }
+    
+    return false;
   };
 
   // Format text with highlights and add silhouette suggestion
