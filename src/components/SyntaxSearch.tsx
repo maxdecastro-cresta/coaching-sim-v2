@@ -75,6 +75,8 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dropdownContainerRef = useRef<HTMLDivElement>(null);
   const categoryRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const firstMenuItemRef = useRef<HTMLDivElement>(null);
+  const [focusedItemIndices, setFocusedItemIndices] = useState<{categoryIndex: number, optionIndex: number} | null>(null);
 
   // Format text with highlights for @ mentions
   const formatTextWithHighlights = (text: string) => {
@@ -121,6 +123,8 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       showVariablePopover();
       setSearchTerm('');
       setFilteredOptions(variableCategories);
+      // Set focus to the first item when opening
+      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
     } 
     // If we're already showing variables, update the search term
     else if (showVariables) {
@@ -157,8 +161,17 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           }, [] as Array<{category: string, count?: number, options: any[]}>);
           
           setFilteredOptions(groupedResults);
+          
+          // Reset focus to first item in filtered results if we have any
+          if (groupedResults.length > 0 && groupedResults[0].options.length > 0) {
+            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+          } else {
+            setFocusedItemIndices(null);
+          }
         } else {
           setFilteredOptions(variableCategories);
+          // Reset focus to first item when clearing search
+          setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
         }
         
         // Update cursor position after filtering
@@ -181,6 +194,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       } else {
         // If there's no '@' before cursor, hide the popover
         setShowVariables(false);
+        setFocusedItemIndices(null);
       }
     }
   };
@@ -208,6 +222,12 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       });
       
       setShowVariables(true);
+      
+      // Set focus to first item when opening
+      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+      
+      // Keep focus on the textarea
+      textAreaRef.current.focus();
     }
   };
 
@@ -250,8 +270,17 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     if (showVariables) {
       if (e.key === 'Escape') {
         setShowVariables(false);
+        setFocusedItemIndices(null);
+        e.preventDefault();
+        return;
       }
-      // Add keyboard navigation if needed
+      
+      // We're only handling basic keydown events in the textarea
+      // The actual navigation logic is now in the global event handler
+      // This avoids duplicate navigation and double-incrementing the selection
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === 'Tab') {
+        e.preventDefault(); // Prevent default behavior
+      }
     }
   };
 
@@ -272,6 +301,112 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       document.removeEventListener('click', handleClick);
     };
   }, []);
+
+  // Setup global keyboard event listener for when dropdown is shown
+  useEffect(() => {
+    const handleKeyboardNav = (e: KeyboardEvent) => {
+      // Only process if the dropdown is shown
+      if (!showVariables) return;
+      
+      // Only intercept navigation keys
+      if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab'].includes(e.key)) {
+        // Only prevent default if the event is from navigation keys and if the target is the textarea
+        if (e.target === textAreaRef.current) {
+          e.preventDefault();
+        }
+        
+        if (e.key === 'Escape') {
+          setShowVariables(false);
+          setFocusedItemIndices(null);
+          return;
+        }
+        
+        if (e.key === 'Enter' && focusedItemIndices) {
+          // Find and select the currently focused option
+          const { categoryIndex, optionIndex } = focusedItemIndices;
+          if (filteredOptions[categoryIndex] && filteredOptions[categoryIndex].options[optionIndex]) {
+            selectVariable(filteredOptions[categoryIndex].options[optionIndex]);
+            e.preventDefault(); // Prevent form submission
+          }
+          return;
+        }
+        
+        if (e.key === 'Tab' || e.key === 'ArrowDown') {
+          // Navigate to next option
+          if (!focusedItemIndices) {
+            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+            return;
+          }
+          
+          const { categoryIndex, optionIndex } = focusedItemIndices;
+          const currentCategory = filteredOptions[categoryIndex];
+          
+          // If we're not at the end of the current category
+          if (optionIndex < currentCategory.options.length - 1) {
+            setFocusedItemIndices({ categoryIndex, optionIndex: optionIndex + 1 });
+          } 
+          // If there are more categories, move to the first option of the next category
+          else if (categoryIndex < filteredOptions.length - 1) {
+            setFocusedItemIndices({ categoryIndex: categoryIndex + 1, optionIndex: 0 });
+            // Scroll to ensure the new category is visible
+            setTimeout(() => scrollToCategory(categoryIndex + 1), 0);
+          }
+          // Otherwise, loop back to the first option
+          else {
+            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+            // Scroll back to top
+            setTimeout(() => scrollToCategory(0), 0);
+          }
+        }
+        
+        if (e.key === 'ArrowUp') {
+          // Navigate to previous option
+          if (!focusedItemIndices) {
+            // Focus the last option of the last category if nothing is focused
+            const lastCategoryIndex = filteredOptions.length - 1;
+            const lastCategory = filteredOptions[lastCategoryIndex];
+            const lastOptionIndex = lastCategory.options.length - 1;
+            setFocusedItemIndices({ categoryIndex: lastCategoryIndex, optionIndex: lastOptionIndex });
+            return;
+          }
+          
+          const { categoryIndex, optionIndex } = focusedItemIndices;
+          
+          // If we're not at the beginning of the current category
+          if (optionIndex > 0) {
+            setFocusedItemIndices({ categoryIndex, optionIndex: optionIndex - 1 });
+          } 
+          // If there are previous categories, move to the last option of the previous category
+          else if (categoryIndex > 0) {
+            const prevCategoryIndex = categoryIndex - 1;
+            const prevCategory = filteredOptions[prevCategoryIndex];
+            const lastOptionIndex = prevCategory.options.length - 1;
+            setFocusedItemIndices({ categoryIndex: prevCategoryIndex, optionIndex: lastOptionIndex });
+            // Scroll to ensure the new category is visible
+            setTimeout(() => scrollToCategory(prevCategoryIndex), 0);
+          }
+          // Otherwise, loop to the last option of the last category
+          else {
+            const lastCategoryIndex = filteredOptions.length - 1;
+            const lastCategory = filteredOptions[lastCategoryIndex];
+            const lastOptionIndex = lastCategory.options.length - 1;
+            setFocusedItemIndices({ categoryIndex: lastCategoryIndex, optionIndex: lastOptionIndex });
+            // Scroll to the last category
+            setTimeout(() => scrollToCategory(lastCategoryIndex), 0);
+          }
+        }
+      }
+    };
+    
+    // Add global keyboard event listener when dropdown is shown
+    if (showVariables) {
+      document.addEventListener('keydown', handleKeyboardNav, true); // Use capture phase
+    }
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyboardNav, true);
+    };
+  }, [showVariables, focusedItemIndices, filteredOptions, selectVariable]);
 
   // Toggle category expansion
   const toggleCategory = (index: number) => {
@@ -295,9 +430,43 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           top: elementTop,
           behavior: 'smooth'
         });
+        
+        // Update focus to the first item in this category
+        if (filteredOptions[categoryIndex] && filteredOptions[categoryIndex].options.length > 0) {
+          setFocusedItemIndices({ categoryIndex, optionIndex: 0 });
+        }
       }
     }
   };
+
+  // Focus effect - when focusedItemIndices changes, update visual indication
+  useEffect(() => {
+    // If the menu is open and we have focus indices, make sure the item is visible
+    if (showVariables && focusedItemIndices && dropdownRef.current) {
+      const { categoryIndex, optionIndex } = focusedItemIndices;
+      
+      // Find the focused element (if any)
+      const focusedItemSelector = `[data-category-index="${categoryIndex}"][data-option-index="${optionIndex}"]`;
+      const focusedElement = dropdownRef.current.querySelector(focusedItemSelector) as HTMLElement;
+      
+      if (focusedElement) {
+        // Ensure the focused element is visible in the scrollable container
+        const container = dropdownRef.current;
+        const elementTop = focusedElement.offsetTop;
+        const elementBottom = elementTop + focusedElement.offsetHeight;
+        const containerTop = container.scrollTop;
+        const containerBottom = containerTop + container.clientHeight;
+        
+        if (elementTop < containerTop) {
+          // Element is above the visible area
+          container.scrollTop = elementTop;
+        } else if (elementBottom > containerBottom) {
+          // Element is below the visible area
+          container.scrollTop = elementBottom - container.clientHeight;
+        }
+      }
+    }
+  }, [focusedItemIndices, showVariables]);
 
   return (
     <div className={`${className} flex flex-col items-center justify-center w-full max-w-3xl mx-auto p-4`}>
@@ -393,15 +562,28 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                       </div>
                       
                       {/* Options for this category */}
-                      {category.options.map((option, optionIndex) => (
-                        <div
-                          key={`${categoryIndex}-${optionIndex}`}
-                          className="px-4 py-2 hover:bg-bg-elevation cursor-pointer text-gray-600"
-                          onClick={() => selectVariable(option)}
-                        >
-                          <span className="body-regular-text truncate block overflow-hidden">{option.label}</span>
-                        </div>
-                      ))}
+                      {category.options.map((option, optionIndex) => {
+                        const isFocused = focusedItemIndices?.categoryIndex === categoryIndex && 
+                                         focusedItemIndices?.optionIndex === optionIndex;
+                        const isFirstItem = categoryIndex === 0 && optionIndex === 0;
+                        
+                        return (
+                          <div
+                            key={`${categoryIndex}-${optionIndex}`}
+                            ref={isFirstItem ? firstMenuItemRef : null}
+                            data-category-index={categoryIndex}
+                            data-option-index={optionIndex}
+                            className={`px-4 py-2 cursor-pointer text-gray-600 outline-none ${
+                              isFocused ? 'bg-bg-elevation' : 'hover:bg-bg-elevation'
+                            }`}
+                            onClick={() => selectVariable(option)}
+                            tabIndex={isFocused ? 0 : -1}
+                            onMouseEnter={() => setFocusedItemIndices({ categoryIndex, optionIndex })}
+                          >
+                            <span className="body-regular-text truncate block overflow-hidden">{option.label}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   ))}
                 </div>
