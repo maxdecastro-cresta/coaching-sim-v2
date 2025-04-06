@@ -944,11 +944,11 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     
     // If what's been typed is already part of the suggestion, only show the rest
     if (silhouetteSuggestion.startsWith(typedText) && typedText.length > 0) {
-      return silhouetteSuggestion.substring(typedText.length);
+      return silhouetteSuggestion.substring(typedText.length) + '@';
     }
     
-    // Otherwise show the whole suggestion
-    return silhouetteSuggestion;
+    // Otherwise show the whole suggestion with closing @
+    return silhouetteSuggestion + '@';
   };
 
   // Ensure category refs array is correctly sized
