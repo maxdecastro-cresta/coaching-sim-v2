@@ -77,10 +77,16 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   const categoryRefs = useRef<(HTMLDivElement | null)[]>([]);
   const firstMenuItemRef = useRef<HTMLDivElement>(null);
   const [focusedItemIndices, setFocusedItemIndices] = useState<{categoryIndex: number, optionIndex: number} | null>(null);
+  // Keep track of silhouette suggestion
+  const [silhouetteSuggestion, setSilhouetteSuggestion] = useState<string | null>(null);
+  const [silhouettePosition, setSilhouettePosition] = useState<number | null>(null);
+  const [activeAtIndex, setActiveAtIndex] = useState<number | null>(null);
 
-  // Format text with highlights for @ mentions
+  // Format text with highlights for @ mentions only - no silhouette here
   const formatTextWithHighlights = (text: string) => {
-    // Find all @ mentions in progress or completed variables
+    if (!text) return '';
+
+    // Process text to highlight @ mentions
     const atMentionRegex = /@[^@\s]*(?:@|$)/g;
     const parts = [];
     let lastIndex = 0;
@@ -110,125 +116,26 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     return parts.join('');
   };
 
-  // Handle text input and detect '@' symbol
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    setValue(newValue);
+  // Format text with highlights and add silhouette suggestion
+  const formatTextWithSilhouette = () => {
+    if (!value) return '';
     
-    // Get cursor position information
-    const cursorPos = e.target.selectionStart || 0;
+    let formattedHtml = formatTextWithHighlights(value);
     
-    // Check if '@' was just typed and is not part of a word
-    if (newValue[cursorPos - 1] === '@' && (cursorPos === 1 || newValue[cursorPos - 2] === ' ' || newValue[cursorPos - 2] === '\n')) {
-      showVariablePopover();
-      setSearchTerm('');
-      setFilteredOptions(variableCategories);
-      // Set focus to the first item when opening
-      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
-    } 
-    // If we're already showing variables, update the search term
-    else if (showVariables) {
-      // Find the text between the last '@' and current cursor position
-      const lastAtIndex = newValue.lastIndexOf('@', cursorPos - 1);
-      if (lastAtIndex >= 0 && lastAtIndex < cursorPos) {
-        const term = newValue.substring(lastAtIndex + 1, cursorPos);
-        setSearchTerm(term);
-        
-        // Filter options based on the search term
-        if (term) {
-          // Search across all options
-          const matchedOptions = allVariableOptions.filter(option => 
-            option.label.toLowerCase().includes(term.toLowerCase()) || 
-            option.id.toLowerCase().includes(term.toLowerCase())
-          );
-
-          // Group results by category
-          const groupedResults = matchedOptions.reduce((acc, option) => {
-            const categoryName = option.categoryName;
-            const existingCategory = acc.find(c => c.category === categoryName);
-            
-            if (existingCategory) {
-              existingCategory.options.push(option);
-            } else {
-              acc.push({
-                category: categoryName,
-                count: option.categoryCount,
-                options: [option]
-              });
-            }
-            
-            return acc;
-          }, [] as Array<{category: string, count?: number, options: any[]}>);
-          
-          setFilteredOptions(groupedResults);
-          
-          // Reset focus to first item in filtered results if we have any
-          if (groupedResults.length > 0 && groupedResults[0].options.length > 0) {
-            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
-          } else {
-            setFocusedItemIndices(null);
-          }
-        } else {
-          setFilteredOptions(variableCategories);
-          // Reset focus to first item when clearing search
-          setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
-        }
-        
-        // Update cursor position after filtering
-        if (textAreaRef.current) {
-          // Recalculate cursor coordinates
-          const textBeforeCursor = textAreaRef.current.value.substring(0, cursorPos);
-          const lines = textBeforeCursor.split('\n');
-          const currentLine = lines.length;
-          const currentLineLength = lines[lines.length - 1].length;
-          
-          // Use more accurate dimensions for positioning
-          const lineHeight = 24; // Line height in pixels
-          const charWidth = 8;   // Approximate character width in pixels
-          
-          setCursorPosition({
-            top: currentLine * lineHeight,
-            left: currentLineLength * charWidth,
-          });
-        }
-      } else {
-        // If there's no '@' before cursor, hide the popover
-        setShowVariables(false);
-        setFocusedItemIndices(null);
-      }
+    // Add silhouette if needed
+    if (getSilhouetteText() && silhouettePosition && activeAtIndex !== null) {
+      // Split the HTML at the cursor position
+      // This is tricky because we need to find the right place in the HTML, not just the text
+      const beforeCursorText = value.substring(0, silhouettePosition);
+      const beforeCursorHtml = formatTextWithHighlights(beforeCursorText);
+      
+      // Insert the silhouette after the formatted HTML for the text before cursor
+      formattedHtml = beforeCursorHtml + 
+                      `<span class="text-gray-400">${getSilhouetteText()}</span>` + 
+                      formattedHtml.substring(beforeCursorHtml.length);
     }
-  };
-
-  // Show variable popover and position it correctly
-  const showVariablePopover = () => {
-    if (textAreaRef.current) {
-      // Get cursor position in textarea
-      const cursorPos = textAreaRef.current.selectionStart || 0;
-      
-      // Calculate cursor coordinates
-      const textBeforeCursor = textAreaRef.current.value.substring(0, cursorPos);
-      const lines = textBeforeCursor.split('\n');
-      const currentLine = lines.length;
-      const currentLineLength = lines[lines.length - 1].length;
-      
-      // More accurate dimensions for positioning
-      const lineHeight = 24; // Line height in pixels, adjusted for the textarea
-      const charWidth = 8;   // Approximate character width in pixels
-      
-      // Position the dropdown above the cursor
-      setCursorPosition({
-        top: currentLine * lineHeight,
-        left: Math.max(0, currentLineLength * charWidth),
-      });
-      
-      setShowVariables(true);
-      
-      // Set focus to first item when opening
-      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
-      
-      // Keep focus on the textarea
-      textAreaRef.current.focus();
-    }
+    
+    return formattedHtml;
   };
 
   // Handle selecting a variable from the menu
@@ -262,6 +169,152 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       }
       
       setShowVariables(false);
+      setSilhouetteSuggestion(null);
+      setSilhouettePosition(null);
+      setActiveAtIndex(null);
+    }
+  };
+
+  // Update the function to handle both filtering options and updating the silhouette
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    
+    // Get cursor position information
+    const cursorPos = e.target.selectionStart || 0;
+    
+    // Check if '@' was just typed and is not part of a word
+    if (newValue[cursorPos - 1] === '@' && (cursorPos === 1 || newValue[cursorPos - 2] === ' ' || newValue[cursorPos - 2] === '\n')) {
+      showVariablePopover();
+      setSearchTerm('');
+      setFilteredOptions(variableCategories);
+      // Set focus to the first item when opening
+      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+      
+      // Set initial silhouette suggestion and track the @ position
+      if (variableCategories[0] && variableCategories[0].options[0]) {
+        setActiveAtIndex(cursorPos - 1);
+        setSilhouetteSuggestion(variableCategories[0].options[0].id);
+        setSilhouettePosition(cursorPos);
+      }
+    } 
+    // If we're already showing variables, update the search term
+    else if (showVariables) {
+      // Find the text between the last '@' and current cursor position
+      const lastAtIndex = newValue.lastIndexOf('@', cursorPos - 1);
+      if (lastAtIndex >= 0 && lastAtIndex < cursorPos) {
+        setActiveAtIndex(lastAtIndex);
+        const term = newValue.substring(lastAtIndex + 1, cursorPos);
+        setSearchTerm(term);
+        
+        // Update silhouette position
+        setSilhouettePosition(cursorPos);
+        
+        // Filter options based on the search term
+        if (term) {
+          // Search across all options
+          const matchedOptions = allVariableOptions.filter(option => 
+            option.label.toLowerCase().includes(term.toLowerCase()) || 
+            option.id.toLowerCase().includes(term.toLowerCase())
+          );
+
+          // Group results by category
+          const groupedResults = matchedOptions.reduce((acc, option) => {
+            const categoryName = option.categoryName;
+            const existingCategory = acc.find(c => c.category === categoryName);
+            
+            if (existingCategory) {
+              existingCategory.options.push(option);
+            } else {
+              acc.push({
+                category: categoryName,
+                count: option.categoryCount,
+                options: [option]
+              });
+            }
+            
+            return acc;
+          }, [] as Array<{category: string, count?: number, options: any[]}>);
+          
+          setFilteredOptions(groupedResults);
+          
+          // Reset focus to first item in filtered results if we have any
+          if (groupedResults.length > 0 && groupedResults[0].options.length > 0) {
+            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+            // Update silhouette suggestion based on the first match
+            const suggestion = groupedResults[0].options[0].id;
+            setSilhouetteSuggestion(suggestion);
+          } else {
+            setFocusedItemIndices(null);
+            setSilhouetteSuggestion(null);
+          }
+        } else {
+          setFilteredOptions(variableCategories);
+          // Reset focus to first item when clearing search
+          setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+          // Update silhouette suggestion with the first item
+          if (variableCategories[0] && variableCategories[0].options[0]) {
+            setSilhouetteSuggestion(variableCategories[0].options[0].id);
+          }
+        }
+        
+        // Update cursor position after filtering
+        if (textAreaRef.current) {
+          // Recalculate cursor coordinates
+          const textBeforeCursor = textAreaRef.current.value.substring(0, cursorPos);
+          const lines = textBeforeCursor.split('\n');
+          const currentLine = lines.length;
+          const currentLineLength = lines[lines.length - 1].length;
+          
+          // Use more accurate dimensions for positioning
+          const lineHeight = 24; // Line height in pixels
+          const charWidth = 8;   // Approximate character width in pixels
+          
+          setCursorPosition({
+            top: currentLine * lineHeight,
+            left: currentLineLength * charWidth,
+          });
+        }
+      } else {
+        // If there's no '@' before cursor, hide the popover
+        setShowVariables(false);
+        setFocusedItemIndices(null);
+        setSilhouetteSuggestion(null);
+        setSilhouettePosition(null);
+        setActiveAtIndex(null);
+      }
+    }
+  };
+
+  // Show variable popover and position it correctly
+  const showVariablePopover = () => {
+    if (textAreaRef.current) {
+      // Get cursor position in textarea
+      const cursorPos = textAreaRef.current.selectionStart || 0;
+      
+      // Calculate cursor coordinates
+      const textBeforeCursor = textAreaRef.current.value.substring(0, cursorPos);
+      const lines = textBeforeCursor.split('\n');
+      const currentLine = lines.length;
+      const currentLineLength = lines[lines.length - 1].length;
+      
+      // More accurate dimensions for positioning
+      const lineHeight = 24; // Line height in pixels, adjusted for the textarea
+      const charWidth = 8;   // Approximate character width in pixels
+      
+      // Position the dropdown above the cursor
+      setCursorPosition({
+        top: currentLine * lineHeight,
+        left: Math.max(0, currentLineLength * charWidth),
+      });
+      
+      setShowVariables(true);
+      
+      // Set focus to first item when opening
+      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+      
+      // Keep focus on the textarea
+      textAreaRef.current.focus();
     }
   };
 
@@ -439,7 +492,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     }
   };
 
-  // Focus effect - when focusedItemIndices changes, update visual indication
+  // Update the focus effect to also update the silhouette suggestion
   useEffect(() => {
     // If the menu is open and we have focus indices, make sure the item is visible
     if (showVariables && focusedItemIndices && dropdownRef.current) {
@@ -464,9 +517,38 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           // Element is below the visible area
           container.scrollTop = elementBottom - container.clientHeight;
         }
+        
+        // Update silhouette suggestion based on the currently focused item
+        if (filteredOptions[categoryIndex] && filteredOptions[categoryIndex].options[optionIndex]) {
+          const option = filteredOptions[categoryIndex].options[optionIndex];
+          setSilhouetteSuggestion(option.id);
+        }
       }
+    } else if (!showVariables) {
+      // Clear silhouette when dropdown is closed
+      setSilhouetteSuggestion(null);
+      setSilhouettePosition(null);
+      setActiveAtIndex(null);
     }
-  }, [focusedItemIndices, showVariables]);
+  }, [focusedItemIndices, showVariables, filteredOptions]);
+
+  // Calculate if we should show silhouette and what text to show
+  const getSilhouetteText = () => {
+    if (!showVariables || !silhouetteSuggestion || !silhouettePosition || activeAtIndex === null) {
+      return null;
+    }
+    
+    // If we have an active @ character and a current cursor position
+    const typedText = value.substring(activeAtIndex + 1, silhouettePosition);
+    
+    // If what's been typed is already part of the suggestion, only show the rest
+    if (silhouetteSuggestion.startsWith(typedText) && typedText.length > 0) {
+      return silhouetteSuggestion.substring(typedText.length);
+    }
+    
+    // Otherwise show the whole suggestion
+    return silhouetteSuggestion;
+  };
 
   return (
     <div className={`${className} flex flex-col items-center justify-center w-full max-w-3xl mx-auto p-4`}>
@@ -490,12 +572,12 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             }}
           />
           
-          {/* Display layer with highlighted text or placeholder */}
+          {/* Display layer with highlighted text and silhouette directly in the HTML */}
           <div 
             className="absolute top-0 left-0 right-0 bottom-0 whitespace-pre-wrap overflow-hidden pointer-events-none p-3 body-regular-text"
             dangerouslySetInnerHTML={{ 
               __html: value 
-                ? formatTextWithHighlights(value)
+                ? formatTextWithSilhouette() 
                 : '<span class="text-content-placeholder">Type your syntax search query here... (Try typing \'@\' for variables)</span>'
             }}
             style={{
