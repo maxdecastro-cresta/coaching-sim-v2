@@ -194,33 +194,33 @@ export function AppSidebar({ currentTheme, onThemeChange }: SidebarProps) {
 
           <SidebarMenuButton
             asChild
-            isActive
             tooltip="Knowledge search"
           >
             <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-primary hover:bg-transparent group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
+              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
                 <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center bg-blue-600 rounded">
-                    <IconBook size={16} className="text-white transition-all duration-300 ease-in-out" />
+                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
+                    <IconBook size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
                   </div>
                 </div>
-                <span className="element-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0">Knowledge search</span>
+                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Knowledge search</span>
               </a>
             </Link>
           </SidebarMenuButton>
 
           <SidebarMenuButton
             asChild
+            isActive
             tooltip="Opera"
           >
             <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
+              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-primary hover:bg-transparent group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
                 <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconSTurnRight size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
+                  <div className="w-[24px] h-[24px] flex items-center justify-center bg-blue-600 rounded">
+                    <IconSTurnRight size={16} className="text-white transition-all duration-300 ease-in-out" />
                   </div>
                 </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Opera</span>
+                <span className="element-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0">Opera</span>
               </a>
             </Link>
           </SidebarMenuButton>

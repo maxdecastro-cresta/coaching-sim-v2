@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from './Sidebar';
+import { SyntaxSearch } from '@/components/SyntaxSearch';
 
 type Theme = 'light' | 'dark' | 'high-contrast';
 
@@ -69,7 +70,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         
         {/* Main content area */}
         <main className="flex-1 overflow-auto bg-bg-page p-8">
-          
+          <SyntaxSearch className="w-full h-full" />
         </main>
       </div>
     </SidebarProvider>
