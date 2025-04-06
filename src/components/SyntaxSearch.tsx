@@ -8,43 +8,39 @@ import { Button } from "@/components/ui/button";
 const variableCategories = [
   {
     category: "Metadata",
-    count: 4,
     options: [
-      { id: 'metadata.type1', label: 'Metadata type', description: 'Metadata type description' },
-      { id: 'metadata.type2', label: 'Metadata type', description: 'Metadata type description' },
-      { id: 'metadata.type3', label: 'Metadata type', description: 'Metadata type description' },
-      { id: 'metadata.type4', label: 'Metadata type', description: 'Metadata type description' }
+      { id: 'metadata.type1', label: 'Metadata type' },
+      { id: 'metadata.type2', label: 'Metadata type' },
+      { id: 'metadata.type3', label: 'Metadata type' },
+      { id: 'metadata.type4', label: 'Metadata type' }
     ]
   },
   {
     category: "Entity",
-    count: 5,
     options: [
-      { id: 'entity.type1', label: 'Entity type', description: 'Entity type description' },
-      { id: 'entity.type2', label: 'Entity type', description: 'Entity type description' },
-      { id: 'entity.type3', label: 'Entity type', description: 'Entity type description' },
-      { id: 'entity.type4', label: 'Entity type', description: 'Entity type description' },
-      { id: 'entity.type5', label: 'Entity type', description: 'Entity type description' }
+      { id: 'entity.type1', label: 'Entity type' },
+      { id: 'entity.type2', label: 'Entity type' },
+      { id: 'entity.type3', label: 'Entity type' },
+      { id: 'entity.type4', label: 'Entity type' },
+      { id: 'entity.type5', label: 'Entity type' }
     ]
   },
   {
     category: "Summarization topic",
-    count: 5,
     options: [
-      { id: 'entity.type6', label: 'Summarization topic type', description: 'Summarization topic type description' },
-      { id: 'entity.type7', label: 'Summarization topic type', description: 'Summarization topic type description' },
-      { id: 'entity.type8', label: 'Summarization topic type', description: 'Summarization topic type description' },
-      { id: 'entity.type9', label: 'Summarization topic type', description: 'Summarization topic type description' },
+      { id: 'entity.type6', label: 'Summarization topic type' },
+      { id: 'entity.type7', label: 'Summarization topic type' },
+      { id: 'entity.type8', label: 'Summarization topic type' },
+      { id: 'entity.type9', label: 'Summarization topic type' }
     ]
   },
   {
     category: "Conversation info",
-    count: 4,
     options: [
-      { id: 'entity.type10', label: 'Conversation info type', description: 'Conversation info type description' },
-      { id: 'entity.type11', label: 'Conversation info type', description: 'Conversation info type description' },
-      { id: 'entity.type12', label: 'Conversation info type', description: 'Conversation info type description' },
-      { id: 'entity.type13', label: 'Conversation info type', description: 'Conversation info type description' }
+      { id: 'positive-moment', label: 'positive-moment' },
+      { id: 'sentiment', label: 'sentiment' },
+      { id: 'negative-moment', label: 'negative-moment' },
+      { id: 'other-moment', label: 'other-moment' }
     ]
   }
 ];
@@ -53,8 +49,7 @@ const variableCategories = [
 const allVariableOptions = variableCategories.flatMap(category => 
   category.options.map(option => ({
     ...option,
-    categoryName: category.category,
-    categoryCount: category.count
+    categoryName: category.category
   }))
 );
 
@@ -67,9 +62,10 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   const [value, setValue] = useState('');
   const [showVariables, setShowVariables] = useState(false);
   const [cursorPosition, setCursorPosition] = useState<{ top: number; left: number } | null>(null);
-  const [filteredOptions, setFilteredOptions] = useState<Array<{category: string, count?: number, options: any[]}>>(variableCategories);
+  const [filteredOptions, setFilteredOptions] = useState<Array<{category: string, options: any[]}>>(variableCategories);
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedCategoryIndex, setExpandedCategoryIndex] = useState<number | null>(2); // Default to the Summarization topic type
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState<number>(0); // Track active category
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [highlightedValue, setHighlightedValue] = useState<string>('');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -288,21 +284,38 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             } else {
               acc.push({
                 category: categoryName,
-                count: option.categoryCount,
                 options: [option]
               });
             }
             
             return acc;
-          }, [] as Array<{category: string, count?: number, options: any[]}>);
+          }, [] as Array<{category: string, options: any[]}>);
           
           setFilteredOptions(groupedResults);
           
-          // Reset focus to first item in filtered results if we have any
-          if (groupedResults.length > 0 && groupedResults[0].options.length > 0) {
-            setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+          // Find the first category with options to select
+          const firstCategoryWithOptions = groupedResults.findIndex(category => category.options.length > 0);
+          
+          // If we found a category with options
+          if (firstCategoryWithOptions !== -1) {
+            // If active category has no options, switch to first category with options
+            const activeCategoryHasOptions = 
+              activeCategoryIndex < groupedResults.length && 
+              groupedResults[activeCategoryIndex]?.options.length > 0;
+            
+            if (!activeCategoryHasOptions) {
+              // Switch to first category with results
+              setActiveCategoryIndex(firstCategoryWithOptions);
+            }
+            
+            // Reset focus to first item in filtered results
+            setFocusedItemIndices({ 
+              categoryIndex: activeCategoryHasOptions ? activeCategoryIndex : firstCategoryWithOptions, 
+              optionIndex: 0 
+            });
+            
             // Update silhouette suggestion based on the first match
-            const suggestion = groupedResults[0].options[0].id;
+            const suggestion = groupedResults[activeCategoryHasOptions ? activeCategoryIndex : firstCategoryWithOptions].options[0].id;
             setSilhouetteSuggestion(suggestion);
           } else {
             // No results found
@@ -311,7 +324,15 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             console.log('No matching variables found for search:', term);
           }
         } else {
-          setFilteredOptions(variableCategories);
+          // When clearing search, reset to show all categories
+          // Use all category data but make sure we have their original structure
+          setFilteredOptions(
+            variableCategories.map(category => ({
+              category: category.category,
+              options: category.options
+            }))
+          );
+          
           // Reset focus to first item when clearing search
           setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
           // Update silhouette suggestion with the first item
@@ -450,6 +471,11 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           // Navigate to next option
           if (!focusedItemIndices) {
             setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+            // Use the matching category index from the original list
+            const matchingOriginalIndex = variableCategories.findIndex(c => 
+              c.category === filteredOptions[0]?.category
+            );
+            setActiveCategoryIndex(matchingOriginalIndex !== -1 ? matchingOriginalIndex : 0);
             return;
           }
           
@@ -462,13 +488,29 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
           } 
           // If there are more categories, move to the first option of the next category
           else if (categoryIndex < filteredOptions.length - 1) {
-            setFocusedItemIndices({ categoryIndex: categoryIndex + 1, optionIndex: 0 });
+            const nextCategoryIndex = categoryIndex + 1;
+            setFocusedItemIndices({ categoryIndex: nextCategoryIndex, optionIndex: 0 });
+            
+            // Find the corresponding original category index
+            const nextCategory = filteredOptions[nextCategoryIndex];
+            const matchingOriginalIndex = variableCategories.findIndex(c => 
+              c.category === nextCategory.category
+            );
+            
+            // Update active category index to highlight the correct left menu item
+            if (matchingOriginalIndex !== -1) {
+              setActiveCategoryIndex(matchingOriginalIndex);
+            } else {
+              setActiveCategoryIndex(nextCategoryIndex);
+            }
+            
             // Scroll to ensure the new category is visible
-            setTimeout(() => scrollToCategory(categoryIndex + 1), 0);
+            setTimeout(() => scrollToCategory(matchingOriginalIndex !== -1 ? matchingOriginalIndex : nextCategoryIndex), 0);
           }
           // Otherwise, loop back to the first option
           else {
             setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+            setActiveCategoryIndex(0);
             // Scroll back to top
             setTimeout(() => scrollToCategory(0), 0);
           }
@@ -482,6 +524,12 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             const lastCategory = filteredOptions[lastCategoryIndex];
             const lastOptionIndex = lastCategory.options.length - 1;
             setFocusedItemIndices({ categoryIndex: lastCategoryIndex, optionIndex: lastOptionIndex });
+            
+            // Find the matching original category index
+            const matchingOriginalIndex = variableCategories.findIndex(c => 
+              c.category === lastCategory.category
+            );
+            setActiveCategoryIndex(matchingOriginalIndex !== -1 ? matchingOriginalIndex : lastCategoryIndex);
             return;
           }
           
@@ -497,8 +545,15 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             const prevCategory = filteredOptions[prevCategoryIndex];
             const lastOptionIndex = prevCategory.options.length - 1;
             setFocusedItemIndices({ categoryIndex: prevCategoryIndex, optionIndex: lastOptionIndex });
+            
+            // Find the matching original category index
+            const matchingOriginalIndex = variableCategories.findIndex(c => 
+              c.category === prevCategory.category
+            );
+            setActiveCategoryIndex(matchingOriginalIndex !== -1 ? matchingOriginalIndex : prevCategoryIndex);
+            
             // Scroll to ensure the new category is visible
-            setTimeout(() => scrollToCategory(prevCategoryIndex), 0);
+            setTimeout(() => scrollToCategory(matchingOriginalIndex !== -1 ? matchingOriginalIndex : prevCategoryIndex), 0);
           }
           // Otherwise, loop to the last option of the last category
           else {
@@ -506,8 +561,15 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             const lastCategory = filteredOptions[lastCategoryIndex];
             const lastOptionIndex = lastCategory.options.length - 1;
             setFocusedItemIndices({ categoryIndex: lastCategoryIndex, optionIndex: lastOptionIndex });
+            
+            // Find the matching original category index
+            const matchingOriginalIndex = variableCategories.findIndex(c => 
+              c.category === lastCategory.category
+            );
+            setActiveCategoryIndex(matchingOriginalIndex !== -1 ? matchingOriginalIndex : lastCategoryIndex);
+            
             // Scroll to the last category
-            setTimeout(() => scrollToCategory(lastCategoryIndex), 0);
+            setTimeout(() => scrollToCategory(matchingOriginalIndex !== -1 ? matchingOriginalIndex : lastCategoryIndex), 0);
           }
         }
       }
@@ -534,23 +596,108 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
 
   // Scroll to a specific category
   const scrollToCategory = (categoryIndex: number) => {
-    if (dropdownRef.current && categoryRefs.current[categoryIndex]) {
+    try {
+      if (!dropdownRef.current) {
+        console.log('Dropdown reference not available');
+        return;
+      }
+      
+      // Get the original category
+      const originalCategory = variableCategories[categoryIndex];
+      if (!originalCategory) {
+        console.log(`Original category at index ${categoryIndex} not found`);
+        return;
+      }
+      
+      // Find corresponding filtered category
+      const filteredCategoryIndex = filteredOptions.findIndex(c => c.category === originalCategory.category);
+      
+      // Check if this category has any options in filtered results
+      const hasOptions = 
+        filteredCategoryIndex !== -1 && 
+        filteredOptions[filteredCategoryIndex].options.length > 0;
+      
+      if (searchTerm && !hasOptions) {
+        console.log(`Category ${originalCategory.category} has no options with the current search term`);
+        return;
+      }
+      
+      // Use the filtered category index for ref and scrolling if it exists
+      const refIndex = filteredCategoryIndex !== -1 ? filteredCategoryIndex : categoryIndex;
+      
+      if (!categoryRefs.current[refIndex]) {
+        console.log(`Category reference for ${originalCategory.category} not available`);
+        return;
+      }
+      
       const container = dropdownRef.current;
-      const element = categoryRefs.current[categoryIndex];
+      const element = categoryRefs.current[refIndex];
       
       if (element) {
-        // Calculate the scroll position, accounting for any sticky headers
-        const elementTop = element.offsetTop;
-        container.scrollTo({
-          top: elementTop,
-          behavior: 'smooth'
-        });
+        // Update active category first (visual feedback)
+        setActiveCategoryIndex(categoryIndex);
         
-        // Update focus to the first item in this category
-        if (filteredOptions[categoryIndex] && filteredOptions[categoryIndex].options.length > 0) {
-          setFocusedItemIndices({ categoryIndex, optionIndex: 0 });
+        // Target position to scroll to
+        const targetPosition = element.offsetTop;
+        
+        // Start position - current scroll position
+        const startPosition = container.scrollTop;
+        
+        // Distance to scroll
+        const distance = targetPosition - startPosition;
+        
+        // If no distance to scroll, just update focus
+        if (distance === 0) {
+          if (filteredOptions[refIndex] && filteredOptions[refIndex].options.length > 0) {
+            setFocusedItemIndices({ categoryIndex: refIndex, optionIndex: 0 });
+          }
+          return;
         }
+        
+        // Duration of the scroll in milliseconds
+        const duration = 300;
+        
+        // Start time
+        let startTime: number | null = null;
+        
+        // Custom easing function - easeInOutQuad
+        const easeInOutQuad = (t: number) => {
+          return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        };
+        
+        // Animation function
+        const animateScroll = (timestamp: number) => {
+          if (!startTime) startTime = timestamp;
+          
+          // Calculate progress
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // Apply easing to the progress
+          const easedProgress = easeInOutQuad(progress);
+          
+          // Calculate new position
+          const newPosition = startPosition + distance * easedProgress;
+          
+          // Set new scroll position
+          container.scrollTop = newPosition;
+          
+          // Continue animation if not complete
+          if (progress < 1) {
+            requestAnimationFrame(animateScroll);
+          } else {
+            // Animation complete - update focus
+            if (filteredOptions[refIndex] && filteredOptions[refIndex].options.length > 0) {
+              setFocusedItemIndices({ categoryIndex: refIndex, optionIndex: 0 });
+            }
+          }
+        };
+        
+        // Start the animation
+        requestAnimationFrame(animateScroll);
       }
+    } catch (error) {
+      console.error('Error in scrollToCategory:', error);
     }
   };
 
@@ -621,6 +768,24 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     return silhouetteSuggestion;
   };
 
+  // Ensure category refs array is correctly sized
+  useEffect(() => {
+    // Reset category refs when filtered options change to ensure we have the right number of refs
+    categoryRefs.current = Array(filteredOptions.length).fill(null);
+  }, [filteredOptions]);
+
+  // Initialize menu - scroll to active category when menu opens
+  useEffect(() => {
+    if (showVariables && categoryRefs.current.length > 0) {
+      // Small delay to ensure the DOM is ready
+      const timer = setTimeout(() => {
+        scrollToCategory(activeCategoryIndex);
+      }, 50);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showVariables]);
+
   return (
     <div className={`${className} flex flex-col items-center justify-center w-full max-w-3xl mx-auto p-4`}>
       <div className="relative w-full max-w-[400px] mx-auto">
@@ -671,39 +836,33 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
               <div className="flex flex-row h-80">
                 {/* Left side navigation with text links */}
                 <div className="w-48 border-r border-controls flex flex-col py-2 px-2">
-                  <div className="flex flex-col flex-grow">
-                    <button 
-                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                      onClick={() => scrollToCategory(0)}
-                    >
-                      Metadata
-                    </button>
-                    <button 
-                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                      onClick={() => scrollToCategory(1)}
-                    >
-                      Entity
-                    </button>
-                    <button 
-                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                      onClick={() => scrollToCategory(2)}
-                    >
-                      Summarization topic
-                    </button>
-                    <button 
-                      className="text-left text-sm py-2 px-2 rounded hover:bg-bg-elevation text-gray-800 font-medium"
-                      onClick={() => scrollToCategory(3)}
-                    >
-                      Conversation info
-                    </button>
-                  </div>
-                  
-                  {/* Manage variables button - moved to left sidebar */}
-                  <div className="text-blue-600 text-sm py-3 px-2 font-medium cursor-pointer flex items-center justify-between border-t border-controls mt-auto">
-                    Manage variables
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
+                  <div className="flex flex-col flex-grow space-y-1">
+                    {/* Always show all categories from the original categories list, not filtered ones */}
+                    {variableCategories.map((originalCategory, index) => {
+                      // Find if this category exists in filtered options
+                      const filteredCategory = filteredOptions.find(c => c.category === originalCategory.category);
+                      
+                      // Check if this category has any options in the filtered results
+                      const hasOptions = filteredCategory && filteredCategory.options.length > 0;
+                      
+                      // Determine if this category should be disabled
+                      const isDisabled = searchTerm && !hasOptions;
+                      
+                      return (
+                        <button 
+                          key={`nav-${originalCategory.category}`}
+                          className={`text-left text-sm py-2 px-2 rounded font-medium ${
+                            isDisabled
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-gray-800 hover:bg-bg-elevation'
+                          }`}
+                          onClick={() => !isDisabled && scrollToCategory(index)}
+                          disabled={isDisabled ? true : false}
+                        >
+                          {originalCategory.category}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
                 
@@ -760,6 +919,14 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                     </div>
                   )}
                 </div>
+              </div>
+              
+              {/* Manage variables button - now outside and full width */}
+              <div className="text-blue-600 text-sm py-3 px-4 font-medium cursor-pointer flex items-center justify-between border-t border-controls">
+                Manage variables
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
             </div>
           </div>
