@@ -3,6 +3,7 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { IconListSearch } from "@tabler/icons-react";
 
 // Updated variable options with categories to match Figma design
 const variableCategories = [
@@ -1094,11 +1095,12 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
                     ))
                   ) : (
                     /* Empty state display - shown when no variables match the search */
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center text-content-primary font-bold py-10">
-                        <div className="uppercase tracking-wide element-regular-text">EMPTY STATE</div>
-                        <div className="uppercase tracking-wide body-small-text">ADD HERE</div>
-                      </div>
+                    <div className="flex flex-col items-center justify-center h-full p-6">
+                      <IconListSearch className="w-6 h-6 text-content-secondary mb-3" stroke={2} />
+                      <h3 className="text-content-primary title-regular-text font-medium mb-1">No results found</h3>
+                      <p className="text-content-secondary body-regular-text text-center">
+                        Try adjusting your search or add new content variables
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1106,7 +1108,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
               
               {/* Manage variables button - now outside and full width */}
               <div className="text-content-action element-small-text py-2 px-4 cursor-pointer flex items-center justify-end border-t border-controls">
-                Manage variables
+                Add content variables
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-content-action ml-2">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
