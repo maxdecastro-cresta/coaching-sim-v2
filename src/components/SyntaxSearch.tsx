@@ -302,7 +302,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     if (!text) return '';
     
     // Process text to highlight @ mentions
-    const atMentionRegex = /@[^@\s]*(?:@|$)/g;
+    // OLD regex: /@[^@\s]*(?:@|$)/g
+    // NEW regex: Match complete variables with start and end @ symbols
+    const atMentionRegex = /@[^@\s]+@/g;
     const parts = [];
     let lastIndex = 0;
     let match;
@@ -408,10 +410,8 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
         }, 0);
       }
       
-      setShowVariables(false);
-      setSilhouetteSuggestion(null);
-      setSilhouettePosition(null);
-      setActiveAtIndex(null);
+      // Close the variable popover and reset related state
+      closeVariablePopover();
     }
   };
 
@@ -425,11 +425,12 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     
     // Check if '@' was just typed and is not part of a word
     if (newValue[cursorPos - 1] === '@' && (cursorPos === 1 || newValue[cursorPos - 2] === ' ' || newValue[cursorPos - 2] === '\n')) {
+      // Show variable popover which will also reset focus
       showVariablePopover();
+      
+      // Update search-related state
       setSearchTerm('');
       setFilteredOptions(variableCategories);
-      // Set focus to the first item when opening
-      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
       
       // Set initial silhouette suggestion and track the @ position
       if (variableCategories[0] && variableCategories[0].options[0]) {
@@ -544,17 +545,13 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
         }
       } else {
         // If there's no '@' before cursor, hide the popover
-        setShowVariables(false);
-        setFocusedItemIndices(null);
-        setSilhouetteSuggestion(null);
-        setSilhouettePosition(null);
-        setActiveAtIndex(null);
+        closeVariablePopover();
       }
     }
   };
 
   // Show variable popover and position it correctly
-  const showVariablePopover = () => {
+  const showVariablePopover = useCallback(() => {
     if (textAreaRef.current) {
       // Get cursor position in textarea
       const cursorPos = textAreaRef.current.selectionStart || 0;
@@ -575,22 +572,35 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
         left: Math.max(0, currentLineLength * charWidth),
       });
       
+      // Show the dropdown menu
       setShowVariables(true);
       
-      // Set focus to first item when opening
+      // Reset focus to the first item when opening
       setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+      
+      // Also reset the active category index to the first category
+      setActiveCategoryIndex(0);
       
       // Keep focus on the textarea
       textAreaRef.current.focus();
     }
-  };
+  }, []);
+
+  // Function to close the variable popover and reset all related state
+  const closeVariablePopover = useCallback(() => {
+    setShowVariables(false);
+    setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+    setActiveCategoryIndex(0);
+    setSilhouetteSuggestion(null);
+    setSilhouettePosition(null);
+    setActiveAtIndex(null);
+  }, []);
 
   // Handle keyboard events for navigation in the variable list
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (showVariables) {
       if (e.key === 'Escape') {
-        setShowVariables(false);
-        setFocusedItemIndices(null);
+        closeVariablePopover();
         e.preventDefault();
         return;
       }
@@ -613,14 +623,16 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       }
       
       // Otherwise close the dropdown
-      setShowVariables(false);
+      if (showVariables) {
+        closeVariablePopover();
+      }
     };
     
     document.addEventListener('click', handleClick);
     return () => {
       document.removeEventListener('click', handleClick);
     };
-  }, []);
+  }, [showVariables]);
 
   // Setup global keyboard event listener for when dropdown is shown
   useEffect(() => {
@@ -636,8 +648,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
         }
         
         if (e.key === 'Escape') {
-          setShowVariables(false);
-          setFocusedItemIndices(null);
+          closeVariablePopover();
           return;
         }
         
@@ -767,7 +778,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     return () => {
       document.removeEventListener('keydown', handleKeyboardNav, true);
     };
-  }, [showVariables, focusedItemIndices, filteredOptions, selectVariable]);
+  }, [showVariables, focusedItemIndices, filteredOptions, selectVariable, closeVariablePopover]);
 
   // Toggle category expansion
   const toggleCategory = (index: number) => {
@@ -779,7 +790,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   };
 
   // Scroll to a specific category
-  const scrollToCategory = (categoryIndex: number) => {
+  const scrollToCategory = useCallback((categoryIndex: number) => {
     try {
       if (!dropdownRef.current) {
         console.log('Dropdown reference not available');
@@ -883,7 +894,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
     } catch (error) {
       console.error('Error in scrollToCategory:', error);
     }
-  };
+  }, [filteredOptions, searchTerm]);
 
   // Update the focus effect to also update the silhouette suggestion
   useEffect(() => {
@@ -961,6 +972,9 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
   // Initialize menu - scroll to active category when menu opens
   useEffect(() => {
     if (showVariables && categoryRefs.current.length > 0) {
+      // Reset focus to first item when showing the menu
+      setFocusedItemIndices({ categoryIndex: 0, optionIndex: 0 });
+      
       // Small delay to ensure the DOM is ready
       const timer = setTimeout(() => {
         scrollToCategory(activeCategoryIndex);
@@ -968,7 +982,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
       
       return () => clearTimeout(timer);
     }
-  }, [showVariables]);
+  }, [showVariables, activeCategoryIndex, scrollToCategory]);
 
   return (
     <div className={`${className} flex flex-col items-center justify-center w-full max-w-3xl mx-auto p-4`}>
@@ -998,7 +1012,7 @@ export function SyntaxSearch({ className, children }: SyntaxSearchProps) {
             dangerouslySetInnerHTML={{ 
               __html: value 
                 ? formatTextWithSilhouette() 
-                : '<span class="text-content-placeholder">Type your syntax search query here... (Try typing \'@\' for variables)</span>'
+                : '<span class="text-content-placeholder">Add an agent hint</span>'
             }}
             style={{
               zIndex: 2,
