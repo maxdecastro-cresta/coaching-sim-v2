@@ -42,6 +42,7 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "@/components/ui/tooltip";
+import { LogoutButton } from "@/components/LogoutButton";
 
 type Theme = 'light' | 'dark' | 'high-contrast';
 
@@ -273,8 +274,7 @@ export function AppSidebar({ currentTheme, onThemeChange }: SidebarProps) {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                <IconLogout size={16} stroke={1.5} />
-                <span className="body-regular-text">Log out</span>
+                <LogoutButton />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
