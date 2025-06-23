@@ -165,7 +165,7 @@ export function AppSidebar({ currentTheme, onThemeChange }: SidebarProps) {
             asChild
             tooltip="Coaching"
           >
-            <Link href="#" legacyBehavior>
+            <Link href="/coaching" legacyBehavior>
               <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
                 <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
                   <div className="w-[24px] h-[24px] flex items-center justify-center rounded">

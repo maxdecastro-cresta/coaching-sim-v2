@@ -13,7 +13,8 @@ import {
 } from "@tabler/icons-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from './Sidebar';
-import { SyntaxSearch } from '@/components/SyntaxSearch';
+import { NavBar } from './NavBar';
+
 
 type Theme = 'light' | 'dark' | 'high-contrast';
 
@@ -68,10 +69,15 @@ export function MainLayout({ children }: MainLayoutProps) {
           onThemeChange={handleThemeChange}
         />
         
-        {/* Main content area */}
-        <main className="flex-1 overflow-auto bg-bg-page p-8">
-          <SyntaxSearch className="w-full h-full" />
-        </main>
+        {/* Navigation bar */}
+        <NavBar />
+        
+        {/* Main content area - positioned to start below navbar and after sidebar */}
+        <div className="flex-1 relative">
+          <div className="overflow-auto bg-bg-page h-full" style={{ marginTop: '96px' }}>
+            {children}
+          </div>
+        </div>
       </div>
     </SidebarProvider>
   );

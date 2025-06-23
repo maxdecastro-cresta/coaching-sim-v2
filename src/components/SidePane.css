@@ -1,0 +1,336 @@
+/* SidePane component styles */
+.side-pane {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  grid-column: span 1;
+}
+
+/* Tab navigation */
+.side-pane-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.side-pane-tab {
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  position: relative;
+}
+
+.side-pane-tab.active {
+  color: #2563eb;
+}
+
+.side-pane-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #2563eb;
+}
+
+.side-pane-tab.inactive {
+  color: #6b7280;
+}
+
+.side-pane-tab.inactive:hover {
+  color: #374151;
+}
+
+.side-pane-tab-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Content area */
+.side-pane-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Feedback content styling */
+.feedback-content {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feedback-header {
+  margin-bottom: 4px;
+}
+
+.feedback-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.feedback-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Talk time section */
+.talk-time-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.talk-time-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.talk-time-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0px;
+  margin-bottom: 4px;
+}
+
+.talk-time-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.talk-time-change {
+  font-size: 12px;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.talk-time-average {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Performance section */
+.performance-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.performance-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.performance-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.performance-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+}
+
+.performance-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.performance-item-icon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+}
+
+.performance-item-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.performance-badge {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.performance-badge.satisfactory {
+  background-color: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.performance-badge.missing {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.performance-badge.percentage {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+/* Quizzes empty state */
+.quizzes-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.quizzes-empty-image {
+  opacity: 0.5;
+}
+
+.quizzes-empty-text {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.quizzes-empty-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0 0 4px 0;
+}
+
+.quizzes-empty-subtitle {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Hints button styling */
+.hints-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 6px;
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.hints-button:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.hints-button .performance-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hints-button .performance-item-icon {
+  width: 16px;
+  height: 16px;
+  color: white;
+}
+
+.hints-button .performance-item-text {
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Stacked hints list */
+.hints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Individual hint container */
+.hint-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 6px;
+  background-color: #f3f4f6; /* light grey */
+  border: 1px solid #d1d5db; /* grey border */
+  border-radius: 24px;
+}
+
+.hint-container .performance-item-icon {
+  width: 16px;
+  height: 16px;
+  color: #6b7280; /* grey icon */
+}
+
+.hint-container .performance-item-text {
+  font-size: 14px;
+  color: #374151; /* darker grey text */
+  font-weight: 500;
+}
+
+/* Bottom toolbar */
+.side-pane-footer {
+  height: 48px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+}
+
+.side-pane-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.side-pane-footer-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.side-pane-footer-right {
+  font-size: 12px;
+  color: #6b7280;
+} 

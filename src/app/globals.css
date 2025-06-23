@@ -55,6 +55,7 @@
 /* Primitive Colors - Not accessible directly in components */
 @layer base {
   :root {
+    --top-nav-height: 96px;
     /* Red */
     --red-0: #fff5f5;
     --red-1: #ffe3e3;
