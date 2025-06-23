@@ -3,9 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { 
-  IconSunHigh, 
-  IconMoon, 
-  IconBolt, 
   IconLogout,
   IconChevronDown,
   IconChartBar,
@@ -44,12 +41,7 @@ import {
 } from "@/components/ui/tooltip";
 
 
-type Theme = 'light' | 'dark' | 'high-contrast';
-
-interface SidebarProps {
-  currentTheme: Theme;
-  onThemeChange: (theme: Theme) => void;
-}
+interface SidebarProps {}
 
 function SidebarLogoSection() {
   const { state, toggleSidebar } = useSidebar();
@@ -118,7 +110,7 @@ function formatUserName(fullName: string, maxLength: number = 15): string {
   return fullName;
 }
 
-export function AppSidebar({ currentTheme, onThemeChange }: SidebarProps) {
+export function AppSidebar(props: SidebarProps) {
   // User profile information
   const userName = "Patrick Soutar";
   const formattedName = formatUserName(userName);
@@ -247,31 +239,6 @@ export function AppSidebar({ currentTheme, onThemeChange }: SidebarProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="body-regular-text">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem 
-                onClick={() => onThemeChange('light')}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <IconSunHigh size={16} stroke={1.5} />
-                <span className="body-regular-text">Light</span>
-                {currentTheme === 'light' && <span className="ml-auto body-small-text">✓</span>}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onThemeChange('dark')}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <IconMoon size={16} stroke={1.5} />
-                <span className="body-regular-text">Dark</span>
-                {currentTheme === 'dark' && <span className="ml-auto body-small-text">✓</span>}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onThemeChange('high-contrast')}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <IconBolt size={16} stroke={1.5} />
-                <span className="body-regular-text">High Contrast</span>
-                {currentTheme === 'high-contrast' && <span className="ml-auto body-small-text">✓</span>}
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                 <IconLogout size={16} />
