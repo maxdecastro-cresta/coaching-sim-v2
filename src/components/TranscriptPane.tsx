@@ -94,7 +94,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       setShowIntroCard(false);
       await navigator.mediaDevices.getUserMedia({ audio: true });
       await conversation.startSession({
-        agentId: process.env.NEXT_PUBLIC_ELEVEN_AGENT_ID || "YOUR_AGENT_ID",
+        agentId: "agent_Oijyeng4zkeO1r2ajv47k26f16",
       });
     } catch (err) {
       console.error("Failed to start ElevenLabs conversation", err);
