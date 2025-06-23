@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { inter } from './fonts';
 import './globals.css';
-import { AuthProvider } from '@/lib/AuthContext';
 
 export const metadata: Metadata = {
   title: 'Design System Demo',
@@ -16,9 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        {children}
       </body>
     </html>
   );
