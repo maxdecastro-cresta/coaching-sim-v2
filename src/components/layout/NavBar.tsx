@@ -5,20 +5,9 @@ import { useSidebar } from "@/components/ui/sidebar";
 import './NavBar.css';
 
 export function NavBar() {
-  const { state } = useSidebar();
-  
-  // Calculate dynamic positioning based on sidebar state
-  const sidebarWidth = state === "expanded" ? "280px" : "64px";
-  
   return (
-    <nav 
-      className="navbar"
-      style={{
-        left: sidebarWidth,
-        width: `calc(100% - ${sidebarWidth})`,
-        marginLeft: '-20px',
-      }}
-    >
+    <nav className="navbar">
+    
       {/* User Header Section */}
       <div className="navbar-header">
         {/* Left: User Name */}

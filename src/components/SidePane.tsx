@@ -4,7 +4,8 @@ import { FC, useState, useEffect } from "react";
 import { BookOpen, Lightbulb, ClipboardCheck, Target } from "lucide-react";
 import Image from "next/image";
 import './SidePane.css';
-import { generateHint, Message } from "../lib/generateHint";
+import { generateHint, Message as HintMessage } from "../lib/generateHint";
+import { Message } from "./MessageBubble";
 import { QuizPanel } from "./QuizPanel";
 
 type TabType = 'quizzes' | 'hints' | 'feedback';
@@ -20,17 +21,46 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
   const [hints, setHints] = useState<string[]>([]);
   const [loadingHint, setLoadingHint] = useState(false);
   const [hintError, setHintError] = useState<string | null>(null);
+  const [quizTriggered, setQuizTriggered] = useState(false);
+  const [quizCompletedThisSession, setQuizCompletedThisSession] = useState(false);
 
-  // Clear hints when resetSignal changes
+  // Clear hints and reset quiz state when resetSignal changes
   useEffect(() => {
     setHints([]);
+    setQuizTriggered(false);
+    setQuizCompletedThisSession(false);
   }, [resetSignal]);
+
+  // Handle quiz completion - return to empty state and mark as completed for this session
+  const handleQuizComplete = () => {
+    setQuizTriggered(false);
+    setQuizCompletedThisSession(true);
+  };
+
+  // Check for "Jessica Brown" in AI messages to trigger quiz (only once per session)
+  useEffect(() => {
+    const hasJessicaBrownMention = messages.some(message => 
+      message.from === 'ai' && 
+      message.text.toLowerCase().includes('jessica brown')
+    );
+    
+    if (hasJessicaBrownMention && !quizTriggered && !quizCompletedThisSession) {
+      setQuizTriggered(true);
+      // Automatically switch to quizzes tab when quiz is triggered
+      setActiveTab('quizzes');
+    }
+  }, [messages, quizTriggered, quizCompletedThisSession]);
 
   const handleGenerateHint = async () => {
     try {
       setLoadingHint(true);
       setHintError(null);
-      const hint = await generateHint(messages);
+      // Convert Message format to HintMessage format
+      const hintMessages: HintMessage[] = messages.map(msg => ({
+        role: msg.from === 'ai' ? 'assistant' : 'user',
+        content: msg.text
+      }));
+      const hint = await generateHint(hintMessages);
       setHints(prev => [hint, ...prev]);
     } catch (err: any) {
       setHintError(err.message || 'Failed to generate hint');
@@ -42,13 +72,12 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'quizzes':
-        // For demo purposes we always show the quiz panel. Toggle this flag to false to restore the original empty state.
-        const showQuizDemo = true;
-        if (showQuizDemo) {
-          return <QuizPanel />;
+        // Show quiz panel only when triggered by "Jessica Brown" mention
+        if (quizTriggered) {
+          return <QuizPanel onComplete={handleQuizComplete} />;
         }
 
-        // Empty state retained for future use
+        // Empty state when quiz hasn't been triggered yet
         return (
           <div className="quizzes-empty">
             <Image
@@ -65,6 +94,25 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
           </div>
         );
       case 'hints':
+        // Show empty state when no lesson has started (no messages)
+        if (messages.length === 0) {
+          return (
+            <div className="quizzes-empty">
+              <Image
+                src="/TestBlank.png"
+                alt="No hints available"
+                width={80}
+                height={80}
+                className="quizzes-empty-image"
+              />
+              <div className="quizzes-empty-text">
+                <p className="quizzes-empty-title">Start a lesson first!</p>
+                <p className="quizzes-empty-subtitle">Hints will be available once you begin a conversation</p>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="feedback-content">
             <div className="feedback-header">
@@ -104,6 +152,25 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
           </div>
         );
       case 'feedback':
+        // Show empty state when no lesson has started (no messages)
+        if (messages.length === 0) {
+          return (
+            <div className="quizzes-empty">
+              <Image
+                src="/TestBlank.png"
+                alt="No feedback available"
+                width={80}
+                height={80}
+                className="quizzes-empty-image"
+              />
+              <div className="quizzes-empty-text">
+                <p className="quizzes-empty-title">Start a lesson first!</p>
+                <p className="quizzes-empty-subtitle">Feedback will be available once you begin a conversation</p>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div className="feedback-content">
             <div className="feedback-header">
@@ -126,7 +193,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
                 <div className="performance-item">
                   <div className="performance-item-left">
                     <Target className="performance-item-icon" />
-                    <span className="performance-item-text">Conveying empathy</span>
+                    <span className="performance-item-text">KPI Placeholder #1</span>
                   </div>
                   <span className="performance-badge satisfactory">
                     Satisfactory
@@ -136,7 +203,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
                 <div className="performance-item">
                   <div className="performance-item-left">
                     <Target className="performance-item-icon" />
-                    <span className="performance-item-text">Building rapport</span>
+                    <span className="performance-item-text">KPI Placeholder #2</span>
                   </div>
                   <span className="performance-badge missing">
                     Missing
@@ -146,7 +213,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
                 <div className="performance-item">
                   <div className="performance-item-left">
                     <Target className="performance-item-icon" />
-                    <span className="performance-item-text">Building rapport</span>
+                    <span className="performance-item-text">KPI Placeholder #3</span>
                   </div>
                   <span className="performance-badge percentage">
                     68%
@@ -164,7 +231,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
   return (
     <section className="side-pane">
       {/* tabstrip */}
-      <nav className="side-pane-nav">
+      <nav className="side-pane-nav" data-active-tab={activeTab}>
         <button 
           type="button" 
           onClick={() => setActiveTab('quizzes')}
@@ -201,7 +268,6 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
       {/* Bottom toolbar */}
       <footer className="side-pane-footer">
         <div className="side-pane-footer-left">
-          <span className="side-pane-footer-title">Learning Tools</span>
         </div>
         <div className="side-pane-footer-right">
         </div>

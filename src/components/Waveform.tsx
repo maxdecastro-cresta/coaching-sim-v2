@@ -1,32 +1,52 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Waveform: React.FC<{ isRecording?: boolean; audioLevel?: number }> = ({ 
-  isRecording = false, 
-  audioLevel = 0 
+interface WaveformProps {
+  isAISpeaking?: boolean;
+  isUserSpeaking?: boolean;
+}
+
+const Waveform: React.FC<WaveformProps> = ({ 
+  isAISpeaking = false,
+  isUserSpeaking = false
 }) => {
-  const bars = Array.from({ length: 40 }, (_, i) => {
-    // Base height with some variation
-    let height = Math.random() * 12 + 4; // 4-16px base
+  const [tick, setTick] = useState(0);
+
+  // Simple animation ticker
+  useEffect(() => {
+    if (!isAISpeaking && !isUserSpeaking) return;
+
+    const interval = setInterval(() => {
+      setTick(prev => prev + 1);
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [isAISpeaking, isUserSpeaking]);
+
+  // Determine colors
+  const isActive = isAISpeaking || isUserSpeaking;
+  let barColor = 'bg-gray-400'; // Default
+  if (isAISpeaking) barColor = 'bg-blue-600'; // Blue for AI
+  if (isUserSpeaking) barColor = 'bg-black'; // Black for user
+
+  // Generate bars with simple animation
+  const bars = Array.from({ length: 30 }, (_, i) => {
+    let height = 8; // Base height
     
-    // If recording, make it more dynamic based on audio level
-    if (isRecording) {
-      height = Math.random() * (audioLevel * 20 + 8) + 4; // 4-28px when active
+    if (isActive) {
+      // Simple wave animation
+      const wave1 = Math.sin((tick + i) * 0.5) * 8;
+      const wave2 = Math.sin((tick * 1.5 + i * 0.3)) * 4;
+      height = Math.max(4, 8 + wave1 + wave2);
     }
     
     return (
       <div
         key={i}
-        className={`w-0.5 rounded-full transition-all duration-200 ease-in-out ${
-          isRecording 
-            ? 'bg-[#304ffe] animate-pulse' 
-            : 'bg-gray-400'
-        }`}
+        className={`w-1 rounded-full transition-all duration-300 ${barColor}`}
         style={{ 
           height: `${height}px`,
-          animationDelay: `${Math.random() * 2}s`,
-          animationDuration: '1.5s'
         }}
       />
     );
@@ -34,7 +54,7 @@ const Waveform: React.FC<{ isRecording?: boolean; audioLevel?: number }> = ({
 
   return (
     <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg px-4 py-2 z-10">
-      <div className="flex items-center justify-center gap-1 h-8">
+      <div className="flex items-center justify-center gap-1 h-10">
         {bars}
       </div>
     </div>

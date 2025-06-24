@@ -103,4 +103,48 @@
 .quiz-submit-icon {
   width: 16px;
   height: 16px;
+}
+
+.quiz-submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quiz-submit-button:disabled:hover {
+  color: #2563eb;
+}
+
+/* Quiz completion styles */
+.quiz-completion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.quiz-completion-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #16a34a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.quiz-checkmark {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.quiz-completion-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #16a34a;
+  margin: 0;
 } 

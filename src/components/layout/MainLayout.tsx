@@ -33,15 +33,16 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex h-screen w-full overflow-hidden">
+      <div className="flex min-h-screen w-full">
         <AppSidebar />
         
-        {/* Navigation bar */}
-        <NavBar />
-        
-        {/* Main content area - positioned to start below navbar and after sidebar */}
-        <div className="flex-1 relative">
-          <div className="overflow-auto bg-bg-page h-full" style={{ marginTop: '96px' }}>
+        {/* Main content area with navbar */}
+        <div className="flex-1 flex flex-col">
+          {/* Navigation bar */}
+          <NavBar />
+          
+          {/* Page content */}
+          <div className="flex-1 bg-bg-page">
             {children}
           </div>
         </div>

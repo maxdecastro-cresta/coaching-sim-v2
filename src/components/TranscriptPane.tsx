@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useRef, useEffect } from "react";
+import React, { FC, useRef, useEffect } from "react";
 import { MessageBubble, Message } from "@/components/MessageBubble";
 import { RotateCcw, Mic, MicOff, Pause, AlertTriangle, Phone } from "lucide-react";
 import { useConversation } from "@elevenlabs/react";
@@ -13,13 +13,21 @@ interface TranscriptPaneProps {
   duration: string;
   setDuration: (duration: string) => void;
   onRestart?: () => void;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration, onRestart }) => {
+export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration, onRestart, messages, setMessages }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [showIntroCard, setShowIntroCard] = useState(true);
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [showPauseDialog, setShowPauseDialog] = useState(false);
+  const [showMicDialog, setShowMicDialog] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   
@@ -33,9 +41,18 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       console.log("ElevenLabs: disconnected");
       setIsLoading(false);
       setStartTime(null);
+      setIsAISpeaking(false);
+      setIsUserSpeaking(false);
+      // Clean up audio context
+      if (audioContext) {
+        audioContext.close();
+        setAudioContext(null);
+        setAnalyser(null);
+      }
     },
     onMessage: (msg) => {
       console.log("ElevenLabs message", msg);
+      console.log("Message source:", msg.source); // Debug: see what source values we get
       
       // Handle messages from ElevenLabs React SDK
       const newMessage: Message = {
@@ -50,6 +67,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         }),
       };
       setMessages(prev => [...prev, newMessage]);
+
     },
     onError: (err) => {
       console.error("ElevenLabs error", err);
@@ -92,9 +110,22 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       setMessages([]);
       setDuration("0:00");
       setShowIntroCard(false);
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Get user media and set up audio analysis
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Set up audio context for microphone activity detection
+      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const source = context.createMediaStreamSource(stream);
+      const analyserNode = context.createAnalyser();
+      analyserNode.fftSize = 256;
+      source.connect(analyserNode);
+      
+      setAudioContext(context);
+      setAnalyser(analyserNode);
+      
       await conversation.startSession({
-        agentId: "agent_Oijyeng4zkeO1r2ajv47k26f16",
+        agentId: process.env.NEXT_PUBLIC_ELEVEN_AGENT_ID!,
       });
     } catch (err) {
       console.error("Failed to start ElevenLabs conversation", err);
@@ -104,7 +135,15 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
-  }, [conversation]);
+    // After ending, restart the lesson like the restart button
+    setMessages([]);
+    setDuration("0:00");
+    setStartTime(null);
+    setShowIntroCard(true);
+    if (onRestart) {
+      onRestart();
+    }
+  }, [conversation, onRestart]);
 
   const restartTranscript = useCallback(() => {
     // Only clear messages and reset state, don't start new session
@@ -118,6 +157,82 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
   }, [onRestart]);
 
   const isConnected = conversation.status === "connected";
+  
+  // Use ElevenLabs SDK's built-in isSpeaking to determine AI speaking state
+  const isAgentSpeaking = conversation.isSpeaking || false;
+  
+  // Update our local state based on the SDK's isSpeaking
+  React.useEffect(() => {
+    if (isAgentSpeaking) {
+      setIsAISpeaking(true);
+      setIsUserSpeaking(false);
+    } else {
+      setIsAISpeaking(false);
+    }
+  }, [isAgentSpeaking]);
+
+  // Microphone activity detection
+  useEffect(() => {
+    if (!analyser || !audioContext) return;
+
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    let animationFrame: number;
+
+    const detectActivity = () => {
+      analyser.getByteFrequencyData(dataArray);
+      
+      // Calculate average volume
+      const sum = dataArray.reduce((a, b) => a + b, 0);
+      const average = sum / bufferLength;
+      
+      // Threshold for detecting speech (adjust as needed)
+      const threshold = 20;
+      
+      // Only set user speaking if AI is not speaking
+      if (!isAgentSpeaking) {
+        setIsUserSpeaking(average > threshold);
+      }
+      
+      animationFrame = requestAnimationFrame(detectActivity);
+    };
+
+    detectActivity();
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [analyser, audioContext, isAgentSpeaking]);
+
+  const handleReportClick = () => {
+    setShowReportDialog(true);
+    // Auto-close after 2 seconds
+    setTimeout(() => {
+      setShowReportDialog(false);
+    }, 2000);
+  };
+
+  const handlePauseClick = () => {
+    if (isConnected) {
+      setShowPauseDialog(true);
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        setShowPauseDialog(false);
+      }, 2000);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (isConnected) {
+      setShowMicDialog(true);
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        setShowMicDialog(false);
+      }, 2000);
+    }
+  };
 
   return (
   <section className="transcript-pane">
@@ -146,14 +261,14 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
             illustration={<img src="/LessonIntro.png" alt="Lesson illustration" className="transcript-intro-illustration" />}
             points={25}
             minutes={25}
-            title="Customer needs to consult with their spouse"
-            module="Handling Customer Objections"
+            title="Handling Missing Baggage Claims"
+            module="United Customer Care - Baggage"
             paragraphs={[
-              "The customer needs to consult their spouse before making a decision about the purchase.",
-              "The customer is interested in a United Platinum tier for their family. They are a frequent traveler with United. You have offered them it at a $59.99 / month price.",
-              "The customer has explained their needs, but now has asked for more time to consult with their spouse. How should you respond to keep the deal alive?"
+              "The customer is calling to report that their baggage has not arrived at their destination.",
+              "The customer got off their flight and their baggage did not arrive with them. They need to be assisted with steps regarding the claim process.",
+              "They have a connecting flight in 2 hours, so you will need to handle a transfer. They are frustrated and want to know what to do next."
             ]}
-            /* Removed Begin Lesson CTA; conversation can be started via toolbar */
+            onStart={startConversation}
           />
         </div>
       ) : messages.length === 0 && !showIntroCard ? (
@@ -183,6 +298,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         {/* Microphone */}
         <button 
           disabled={!isConnected}
+          onClick={handleMicClick}
           className={`transcript-mic-button ${
             isConnected 
               ? 'connected' 
@@ -215,6 +331,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         {/* Pause */}
         <button 
           disabled={!isConnected}
+          onClick={handlePauseClick}
           className={`transcript-mic-button ${
             isConnected 
               ? 'connected' 
@@ -226,14 +343,53 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       </div>
 
       {/* Right: Report button */}
-      <button className="transcript-toolbar-button">
+      <button className="transcript-toolbar-button" onClick={handleReportClick}>
         <AlertTriangle className="transcript-toolbar-button-icon" />
         <span className="transcript-toolbar-button-text">Report</span>
       </button>
 
       {/* Waveform UI - integrated into footer */}
-      <Waveform isRecording={isConnected} audioLevel={0.5} />
+      <Waveform 
+        isAISpeaking={isAISpeaking}
+        isUserSpeaking={isUserSpeaking}
+      />
     </footer>
+
+    {/* Report Dialog */}
+    {showReportDialog && (
+      <div className="report-dialog-overlay">
+        <div className="report-dialog">
+          <div className="report-dialog-content">
+            <div className="report-dialog-emoji">😢</div>
+            <p className="report-dialog-text">Haven't set this up lol</p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Pause Dialog */}
+    {showPauseDialog && (
+      <div className="report-dialog-overlay">
+        <div className="report-dialog">
+          <div className="report-dialog-content">
+            <div className="report-dialog-emoji">😢</div>
+            <p className="report-dialog-text">Haven't set this up lol</p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Mic Dialog */}
+    {showMicDialog && (
+      <div className="report-dialog-overlay">
+        <div className="report-dialog">
+          <div className="report-dialog-content">
+            <div className="report-dialog-emoji">😢</div>
+            <p className="report-dialog-text">Haven't set this up lol</p>
+          </div>
+        </div>
+      </div>
+    )}
   </section>
   );
 }; 

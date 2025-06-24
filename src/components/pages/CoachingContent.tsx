@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, Dispatch, SetStateAction } from 'react';
 import { ChevronRight } from "lucide-react";
 import { TranscriptPane } from "@/components/TranscriptPane";
 import { SidePane } from "@/components/SidePane";
+import { Message } from "@/components/MessageBubble";
 import './CoachingContent.css';
 
 export function CoachingContent() {
   const [duration, setDuration] = useState<string>("0:00");
   const [restartSignal, setRestartSignal] = useState<number>(0);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleRestart = () => {
     setRestartSignal(prev => prev + 1);
+    setMessages([]); // Clear messages on restart
   };
 
   return (
@@ -21,7 +24,7 @@ export function CoachingContent() {
         <div className="lesson-header">
           {/* A. breadcrumb */}
           <nav className="lesson-breadcrumb">
-            <span>Handling Customer Objectives&nbsp;</span>
+            <span>United Customer Care - Baggage&nbsp;</span>
             <ChevronRight className="chevron" />
             <span className="current">Lesson&nbsp;Three</span>
           </nav>
@@ -29,15 +32,25 @@ export function CoachingContent() {
           {/* B. lesson title */}
           <header className="lesson-title-header">
             <h2 className="lesson-title">
-              Handling Customer Objections
+              Handling Missing Baggage Claims
             </h2>
           </header>
         </div>
 
-        {/* two-column grid (locked to viewport height) */}
-        <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh_-_var(--top-nav-height)_-_120px)]">
-          <TranscriptPane duration={duration} setDuration={setDuration} onRestart={handleRestart} />
-          <SidePane duration={duration} resetSignal={restartSignal} />
+        {/* two-column grid (flexible height) */}
+        <div className="lesson-grid">
+          <TranscriptPane 
+            duration={duration} 
+            setDuration={setDuration} 
+            onRestart={handleRestart}
+            messages={messages}
+            setMessages={setMessages}
+          />
+          <SidePane 
+            duration={duration} 
+            resetSignal={restartSignal} 
+            messages={messages}
+          />
         </div>
 
       </div>

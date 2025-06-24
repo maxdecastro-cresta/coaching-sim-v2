@@ -3,7 +3,7 @@ import { inter } from './fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Design System Demo',
+  title: 'Coaching Simulator',
   description: 'Demo of a design system using Shadcn UI',
 };
 

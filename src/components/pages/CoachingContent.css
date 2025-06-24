@@ -3,16 +3,19 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 0px 80px;
-  overflow: hidden;
+  padding: 0px 80px 80px 80px;
   background-color: #ffffff;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Wrapper for centering on big screens */
 .lesson-wrapper {
-  width: 100%;
-  max-width: 1300px; /* reduced from 1536px */
+  width: 105%; /* Adjustable width */
+  max-width: none; /* Remove max-width constraint */
   margin: 0 auto;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%); /* Center regardless of width */
 }
 
 /* Breadcrumb + title block */
@@ -62,8 +65,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  flex: 1;
-  overflow: hidden;
+  min-height: 600px;
 }
 
 /* Transcript pane (left column) */
@@ -75,6 +77,7 @@
   border: 1px solid #e5e7eb; /* border-gray-200 */
   border-radius: 12px;
   overflow: hidden;
+  min-height: 600px;
 }
 
 .transcript-header {
@@ -130,6 +133,7 @@
   border: 1px solid #e5e7eb; /* border-gray-200 */
   border-radius: 12px;
   overflow: hidden;
+  min-height: 600px;
 }
 
 .tabs-nav {

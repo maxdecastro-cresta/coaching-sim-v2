@@ -7,6 +7,7 @@
   border-radius: 12px;
   overflow: hidden;
   grid-column: span 1;
+  min-height: 600px;
 }
 
 /* Tab navigation */
@@ -17,6 +18,33 @@
   font-size: 12px;
   font-weight: 500;
   border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+/* Sliding blue bar indicator */
+.side-pane-nav::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 33.333%;
+  height: 2px;
+  background-color: #2563eb;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: left;
+}
+
+/* Move the blue bar based on active tab */
+.side-pane-nav[data-active-tab="quizzes"]::after {
+  transform: translateX(0%);
+}
+
+.side-pane-nav[data-active-tab="hints"]::after {
+  transform: translateX(100%);
+}
+
+.side-pane-nav[data-active-tab="feedback"]::after {
+  transform: translateX(200%);
 }
 
 .side-pane-tab {
@@ -28,22 +56,14 @@
   background: none;
   border: none;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  z-index: 1;
 }
 
 .side-pane-tab.active {
   color: #2563eb;
-}
-
-.side-pane-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #2563eb;
+  transform: scale(1.02);
 }
 
 .side-pane-tab.inactive {
@@ -52,6 +72,7 @@
 
 .side-pane-tab.inactive:hover {
   color: #374151;
+  transform: translateY(-1px);
 }
 
 .side-pane-tab-icon {
@@ -66,6 +87,22 @@
   background-color: #f9fafb;
   display: flex;
   flex-direction: column;
+  min-height: 400px;
+  position: relative;
+}
+
+/* Smooth content transitions */
+.side-pane-content > * {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Feedback content styling */

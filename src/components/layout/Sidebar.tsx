@@ -10,7 +10,15 @@ import {
   IconUsers,
   IconProgressCheck,
   IconBook,
-  IconSTurnRight
+  IconSTurnRight,
+  IconMicrophone,
+  IconBuildingStore,
+  IconClipboardList,
+  IconSchool,
+  IconLibrary,
+  IconEye,
+  IconSettings,
+  IconLifebuoy
 } from "@tabler/icons-react";
 import { Logo } from "@/components/icons";
 import { LogoIcon } from "@/components/icons/LogoIcon";
@@ -47,10 +55,10 @@ function SidebarLogoSection() {
   const { state, toggleSidebar } = useSidebar();
   
   return (
-    <SidebarHeader className="px-6 py-4 flex flex-col items-start transition-all duration-300 ease-in-out group-data-[collapsible=icon]:px-1 relative bg-bg-surface">
-      <div className="h-[32px] w-full flex items-center transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center">
+    <SidebarHeader className="px-6 py-6 flex flex-col items-start transition-all duration-300 ease-in-out group-data-[collapsible=icon]:px-1" style={{ backgroundColor: '#001529' }}>
+      <div className="h-[48px] w-full flex items-center transition-all duration-300 ease-in-out group-data-[collapsible=icon]:justify-center">
         {state === "expanded" ? (
-          <Logo width={80} height={29} color="var(--content-primary)" className="transition-all duration-300 ease-in-out text-left" />
+          <Logo width={120} height={43} color="white" className="transition-all duration-300 ease-in-out text-left" />
         ) : (
           <TooltipProvider>
             <Tooltip>
@@ -59,7 +67,7 @@ function SidebarLogoSection() {
                   className="cursor-pointer transition-all duration-300 ease-in-out hover:opacity-80"
                   onClick={toggleSidebar}
                 >
-                  <LogoIcon width={20} height={20} color="var(--content-primary)" className="transition-all duration-300 ease-in-out" />
+                  <LogoIcon width={24} height={24} color="white" className="transition-all duration-300 ease-in-out" />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">
@@ -69,11 +77,6 @@ function SidebarLogoSection() {
           </TooltipProvider>
         )}
       </div>
-      {state === "expanded" && (
-        <div className="absolute top-4 right-4 transition-all duration-300 ease-in-out">
-          <SidebarToggleButton />
-        </div>
-      )}
     </SidebarHeader>
   );
 }
@@ -86,10 +89,47 @@ function SidebarToggleButton() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <SidebarTrigger className="ml-2 h-7 w-7 transition-all duration-300 ease-in-out" />
+          <button 
+            onClick={toggleSidebar}
+            className="h-8 w-8 flex items-center justify-center text-white hover:bg-blue-800 rounded transition-all duration-300 ease-in-out"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M3 12h18M3 6h18M3 18h18"/>
+            </svg>
+          </button>
         </TooltipTrigger>
         <TooltipContent side="right">
           Collapse sidebar
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+// Function to create a sidebar footer toggle button
+function SidebarFooterToggle() {
+  const { state, toggleSidebar } = useSidebar();
+  
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button 
+            onClick={toggleSidebar}
+            className="w-full h-10 flex items-center justify-center rounded transition-all duration-300 ease-in-out hover:opacity-80"
+            style={{ backgroundColor: '#06213F' }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none">
+              {state === "expanded" ? (
+                <path d="M15 18l-6-6 6-6"/> // Left-pointing chevron (collapse)
+              ) : (
+                <path d="M9 18l6-6-6-6"/> // Right-pointing chevron (expand)
+              )}
+            </svg>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          {state === "expanded" ? "Collapse sidebar" : "Expand sidebar"}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -112,141 +152,58 @@ function formatUserName(fullName: string, maxLength: number = 15): string {
 
 export function AppSidebar(props: SidebarProps) {
   // User profile information
-  const userName = "Patrick Soutar";
+  const userName = "Max de Castro";
   const formattedName = formatUserName(userName);
   const userInitials = userName.split(' ').map(name => name[0]).join('').substring(0, 2);
 
   return (
-    <UISidebar className="bg-bg-surface border-r border-[var(--border-default)] transition-all duration-300 ease-in-out group-data-[state=collapsed]:px-1" collapsible="icon">
+    <UISidebar 
+      className="border-r border-[var(--border-default)] transition-all duration-300 ease-in-out group-data-[state=collapsed]:px-1" 
+      style={{ backgroundColor: '#001529' }}
+      collapsible="icon"
+    >
       <SidebarLogoSection />
-      <SidebarContent className="w-full transition-all duration-300 ease-in-out bg-bg-surface">
-        <SidebarMenu className="space-y-0 gap-[2px] divide-y divide-transparent transition-all duration-300 ease-in-out">
-          <SidebarMenuButton
-            asChild
-            tooltip="Insights"
-          >
+      <SidebarContent className="w-full transition-all duration-300 ease-in-out" style={{ backgroundColor: '#001529' }}>
+        <SidebarMenu className="space-y-1 gap-0 transition-all duration-300 ease-in-out px-3">
+          <SidebarMenuButton asChild tooltip="Conversations">
             <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconChartBar size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
-                  </div>
-                </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Insights</span>
+              <a className="flex items-center justify-start gap-3 px-3 py-2 h-[40px] text-white hover:bg-blue-800 hover:text-white group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center transition-all duration-300 ease-in-out rounded-md">
+                <IconMessageCircle size={18} className="text-white transition-all duration-300 ease-in-out flex-shrink-0" />
+                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out text-white">Conversations</span>
               </a>
             </Link>
           </SidebarMenuButton>
 
-          <SidebarMenuButton
-            asChild
-            tooltip="Conversations"
-          >
-            <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconMessageCircle size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
-                  </div>
-                </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Conversations</span>
-              </a>
-            </Link>
-          </SidebarMenuButton>
-
-          <SidebarMenuButton
-            asChild
-            tooltip="Coaching"
-          >
+          <SidebarMenuButton asChild tooltip="Coaching">
             <Link href="/coaching" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconUsers size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
-                  </div>
-                </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Coaching</span>
+              <a className="flex items-center justify-start gap-3 px-3 py-2 h-[40px] bg-blue-600 text-white hover:bg-blue-700 group group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:hover:bg-blue-800 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:justify-center transition-all duration-300 ease-in-out rounded-md group-data-[collapsible=icon]:rounded-none border-l-4 border-blue-400">
+                <IconUsers size={18} className="text-white transition-all duration-300 ease-in-out flex-shrink-0" />
+                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out text-white font-semibold">Coaching</span>
               </a>
             </Link>
           </SidebarMenuButton>
 
-          <SidebarMenuButton
-            asChild
-            tooltip="Quality management"
-          >
+          <SidebarMenuButton asChild tooltip="Coaching Hub">
             <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconProgressCheck size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
-                  </div>
-                </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Quality management</span>
+              <a className="flex items-center justify-start gap-3 px-3 py-2 h-[40px] text-white hover:bg-blue-800 hover:text-white group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center transition-all duration-300 ease-in-out rounded-md">
+                <IconBuildingStore size={18} className="text-white transition-all duration-300 ease-in-out flex-shrink-0" />
+                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out text-white">Coaching Hub</span>
               </a>
             </Link>
           </SidebarMenuButton>
 
-          <SidebarMenuButton
-            asChild
-            tooltip="Knowledge search"
-          >
+          <SidebarMenuButton asChild tooltip="Trainer">
             <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <IconBook size={16} className="text-inherit transition-all duration-300 ease-in-out hover:text-content-primary" />
-                  </div>
-                </div>
-                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0 hover:element-regular-text">Knowledge search</span>
-              </a>
-            </Link>
-          </SidebarMenuButton>
-
-          <SidebarMenuButton
-            asChild
-            isActive
-            tooltip="Opera"
-          >
-            <Link href="#" legacyBehavior>
-              <a className="flex items-center justify-start gap-2 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-primary hover:bg-transparent group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-2 transition-all duration-300 ease-in-out rounded-md">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out group-data-[collapsible=icon]:ml-0">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center bg-blue-600 rounded">
-                    <IconSTurnRight size={16} className="text-white transition-all duration-300 ease-in-out" />
-                  </div>
-                </div>
-                <span className="element-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 group-data-[collapsible=icon]:opacity-0">Opera</span>
+              <a className="flex items-center justify-start gap-3 px-3 py-2 h-[40px] text-white hover:bg-blue-800 hover:text-white group group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center transition-all duration-300 ease-in-out rounded-md">
+                <IconSchool size={18} className="text-white transition-all duration-300 ease-in-out flex-shrink-0" />
+                <span className="body-regular-text group-data-[collapsible=icon]:hidden whitespace-nowrap transition-all duration-300 ease-in-out text-white">Trainer</span>
               </a>
             </Link>
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="group-data-[collapsible=icon]:px-1 transition-all duration-300 ease-in-out bg-bg-surface">
-        <div className="group-data-[collapsible=icon]:hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <a className="flex items-center justify-start gap-3 px-[14px] py-1 mx-2 my-0.5 h-[38px] text-content-secondary hover:bg-bg-section hover:text-content-primary group transition-all duration-300 ease-in-out rounded-md cursor-pointer">
-                <div className="flex items-center justify-center min-w-[24px] transition-all duration-300 ease-in-out">
-                  <div className="w-[24px] h-[24px] flex items-center justify-center rounded">
-                    <Avatar className="h-7 w-7">
-                      <AvatarFallback className="bg-ext-pink-content text-content-contrast body-small-text">{userInitials}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                </div>
-                <span className="body-regular-text whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 hover:element-regular-text">{formattedName}</span>
-                <div className="ml-auto">
-                  <IconChevronDown size={16} className="text-sidebar-foreground opacity-70" />
-                </div>
-              </a>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="body-regular-text">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                <IconLogout size={16} />
-                <span className="body-regular-text">Sign out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+      <SidebarFooter className="group-data-[collapsible=icon]:px-1 transition-all duration-300 ease-in-out py-4" style={{ backgroundColor: '#001529' }}>
+        <SidebarFooterToggle />
       </SidebarFooter>
     </UISidebar>
   );
