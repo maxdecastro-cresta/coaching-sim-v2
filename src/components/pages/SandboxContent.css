@@ -1,0 +1,99 @@
+.sandbox-main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sandbox-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.sandbox-subtitle {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.sandbox-controls {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.sandbox-demo-button {
+  background-color: #304FFE;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sandbox-demo-button:hover {
+  background-color: #1534e3;
+}
+
+.sandbox-demo-button-secondary {
+  background-color: #6B7280;
+}
+
+.sandbox-demo-button-secondary:hover {
+  background-color: #4B5563;
+}
+
+.sandbox-demo-button-tertiary {
+  background-color: #059669;
+}
+
+.sandbox-demo-button-tertiary:hover {
+  background-color: #047857;
+}
+
+.sandbox-area {
+  border: 1px dashed #ccc;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  min-height: 400px;
+}
+
+/* Container to match TranscriptPane's positioning context */
+.sandbox-animation-container {
+  position: relative;
+  height: 300px;
+  border: 1px solid #eee;
+  border-radius: 0.5rem;
+  background: #fafafa;
+}
+
+/* Loading overlay - copied from FeedbackContent.css */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 50;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading-sun {
+  width: 67px; /* Reduced by 30% from 96px */
+  height: 67px; /* Reduced by 30% from 96px */
+  animation: spin-scale 2.5s cubic-bezier(.22,1,.36,1) infinite;
+}
+
+.loading-text {
+  color: #6B7280;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@keyframes spin-scale {
+  0%   { transform: rotate(0deg)   scale(1);   }
+  50%  { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1);   }
+} 

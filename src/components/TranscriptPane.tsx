@@ -8,6 +8,9 @@ import { useCallback, useState } from "react";
 import Waveform from "@/components/Waveform";
 import { LessonIntroCard } from "@/components/LessonIntroCard";
 import './TranscriptPane.css';
+import { useLesson } from '@/contexts/LessonContext';
+import { useSession } from '@/contexts/SessionContext';
+import { CongratsBanner } from '@/components/CongratsBanner';
 
 interface TranscriptPaneProps {
   duration: string;
@@ -18,6 +21,8 @@ interface TranscriptPaneProps {
 }
 
 export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration, onRestart, messages, setMessages }) => {
+  const lesson = useLesson();
+  const { addMessage, endLesson } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [showIntroCard, setShowIntroCard] = useState(true);
@@ -25,20 +30,23 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [showMicDialog, setShowMicDialog] = useState(false);
+  const [showCongratsBanner, setShowCongratsBanner] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const userEndedRef = useRef(false);
   
   const conversation = useConversation({
     onConnect: () => {
-      console.log("ElevenLabs: connected");
+      console.log("🟢 ElevenLabs: connected");
       setIsLoading(false);
       setStartTime(new Date());
     },
     onDisconnect: () => {
-      console.log("ElevenLabs: disconnected");
+      console.log("🔴 ElevenLabs: disconnected");
       setIsLoading(false);
       setStartTime(null);
       setIsAISpeaking(false);
@@ -48,29 +56,78 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         audioContext.close();
         setAudioContext(null);
         setAnalyser(null);
+        // Stop microphone tracks if any
+        if (mediaStream) {
+          mediaStream.getTracks().forEach((t) => t.stop());
+          setMediaStream(null);
+        }
+      }
+
+      // If the session was ended by the user, navigation has already happened.
+      // Otherwise (AI-initiated end) show the Congrats banner and wait for user action.
+      if (userEndedRef.current) {
+        // Reset flag for next sessions
+        userEndedRef.current = false;
+        navigateToFeedback();
+      } else {
+        setShowCongratsBanner(true);
       }
     },
-    onMessage: (msg) => {
-      console.log("ElevenLabs message", msg);
-      console.log("Message source:", msg.source); // Debug: see what source values we get
+    onMessage: (messageData: any) => {
+      console.log('📝 ElevenLabs onMessage - Raw data:', messageData);
+      console.log('📝 ElevenLabs onMessage - Type:', typeof messageData);
+      console.log('📝 ElevenLabs onMessage - Keys:', messageData && typeof messageData === 'object' ? Object.keys(messageData) : 'not an object');
       
-      // Handle messages from ElevenLabs React SDK
+      // Try to extract message and source from whatever format we get
+      let message: string = '';
+      let source: 'user' | 'ai' = 'ai';
+      
+      // Handle string directly
+      if (typeof messageData === 'string') {
+        message = messageData;
+        source = 'ai';
+      }
+      // Handle object with message property
+      else if (messageData && typeof messageData === 'object') {
+        if (messageData.message) {
+          message = messageData.message;
+          source = messageData.source || messageData.from || 'ai';
+        } else if (messageData.text) {
+          message = messageData.text;
+          source = messageData.source || messageData.from || 'ai';
+        } else {
+          // Log the structure so we can see what we're getting
+          console.log('📝 Unknown message structure:', JSON.stringify(messageData, null, 2));
+          return;
+        }
+      } else {
+        console.log('📝 Unexpected message type:', typeof messageData, messageData);
+        return;
+      }
+      
+      if (!message) {
+        console.log('📝 No message text found in:', messageData);
+        return;
+      }
+      
       const newMessage: Message = {
-        id: `${msg.source}-${Date.now()}`,
-        from: msg.source === 'ai' ? 'ai' : 'user',
-        text: msg.message,
-        time: new Date().toLocaleTimeString('en-US', { 
-          hour12: true, 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          second: '2-digit' 
+        id: `${source}-${Date.now()}`,
+        from: source,
+        text: message,
+        time: new Date().toLocaleTimeString('en-US', {
+          hour12: true,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
         }),
       };
+      
+      console.log('📝 Adding message to state:', newMessage);
       setMessages(prev => [...prev, newMessage]);
-
+      addMessage({ role: source === 'user' ? 'user' : 'assistant', content: message });
     },
-    onError: (err) => {
-      console.error("ElevenLabs error", err);
+    onError: (err: any) => {
+      console.error("❌ ElevenLabs error", err);
       setIsLoading(false);
     },
   });
@@ -105,6 +162,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
 
   const startConversation = useCallback(async () => {
     try {
+      console.log('🚀 Starting conversation with agentId:', lesson.agentId);
       setIsLoading(true);
       // Clear messages when starting a new conversation
       setMessages([]);
@@ -112,7 +170,10 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       setShowIntroCard(false);
       
       // Get user media and set up audio analysis
+      console.log('🎤 Requesting microphone access...');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMediaStream(stream);
+      console.log('🎤 Microphone access granted');
       
       // Set up audio context for microphone activity detection
       const context = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -124,26 +185,52 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       setAudioContext(context);
       setAnalyser(analyserNode);
       
-      await conversation.startSession({
-        agentId: process.env.NEXT_PUBLIC_ELEVEN_AGENT_ID!,
+      console.log('🔌 Starting ElevenLabs session...');
+      
+      // Debug: Log conversation object properties
+      console.log('🔍 Conversation object properties:', Object.getOwnPropertyNames(conversation));
+      console.log('🔍 Conversation prototype methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(conversation)));
+      
+      const sessionId = await conversation.startSession({
+        agentId: lesson.agentId,
       });
+      
+      console.log('📋 Session ID:', sessionId);
+      console.log('✅ ElevenLabs session started successfully');
+      
+      // Debug: Check what's actually available on the conversation object after connection
+      setTimeout(() => {
+        console.log('🔍 Post-connection conversation status:', conversation.status);
+        console.log('🔍 Post-connection conversation isSpeaking:', conversation.isSpeaking);
+        console.log('🔍 Available conversation methods:', Object.getOwnPropertyNames(conversation).filter(prop => typeof (conversation as any)[prop] === 'function'));
+      }, 1000);
     } catch (err) {
-      console.error("Failed to start ElevenLabs conversation", err);
+      console.error("❌ Failed to start ElevenLabs conversation", err);
       setIsLoading(false);
     }
-  }, [conversation]);
+  }, [conversation, lesson]);
+
+  const hasNavigatedRef = useRef(false);
+
+  const navigateToFeedback = useCallback(() => {
+    if (hasNavigatedRef.current) return;
+    hasNavigatedRef.current = true;
+    endLesson();
+  }, [endLesson]);
 
   const stopConversation = useCallback(async () => {
+    // Mark that this termination came from the user so onDisconnect knows.
+    userEndedRef.current = true;
     await conversation.endSession();
-    // After ending, restart the lesson like the restart button
-    setMessages([]);
-    setDuration("0:00");
-    setStartTime(null);
-    setShowIntroCard(true);
-    if (onRestart) {
-      onRestart();
+
+    // Stop mic tracks for safety but KEEP transcript state so feedback page has it
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((t) => t.stop());
+      setMediaStream(null);
     }
-  }, [conversation, onRestart]);
+
+    navigateToFeedback();
+  }, [conversation, mediaStream, navigateToFeedback]);
 
   const restartTranscript = useCallback(() => {
     // Only clear messages and reset state, don't start new session
@@ -161,8 +248,14 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
   // Use ElevenLabs SDK's built-in isSpeaking to determine AI speaking state
   const isAgentSpeaking = conversation.isSpeaking || false;
   
+  // Debug log for conversation status
+  React.useEffect(() => {
+    console.log('🔄 Conversation status changed:', conversation.status);
+  }, [conversation.status]);
+  
   // Update our local state based on the SDK's isSpeaking
   React.useEffect(() => {
+    console.log('🗣️ Agent speaking state changed:', isAgentSpeaking);
     if (isAgentSpeaking) {
       setIsAISpeaking(true);
       setIsUserSpeaking(false);
@@ -234,6 +327,11 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
     }
   };
 
+  const handleSeeFeedback = useCallback(() => {
+    setShowCongratsBanner(false);
+    navigateToFeedback();
+  }, [navigateToFeedback]);
+
   return (
   <section className="transcript-pane">
     {/* Header */}
@@ -259,15 +357,11 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         <div className="transcript-intro-container">
           <LessonIntroCard
             illustration={<img src="/LessonIntro.png" alt="Lesson illustration" className="transcript-intro-illustration" />}
-            points={25}
-            minutes={25}
-            title="Handling Missing Baggage Claims"
-            module="United Customer Care - Baggage"
-            paragraphs={[
-              "The customer is calling to report that their baggage has not arrived at their destination.",
-              "The customer got off their flight and their baggage did not arrive with them. They need to be assisted with steps regarding the claim process.",
-              "They have a connecting flight in 2 hours, so you will need to handle a transfer. They are frustrated and want to know what to do next."
-            ]}
+            points={lesson.points}
+            minutes={lesson.durationMins}
+            title={lesson.title}
+            module={lesson.module}
+            paragraphs={lesson.intro.paragraphs}
             onStart={startConversation}
           />
         </div>
@@ -275,9 +369,12 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         // No placeholder text when intro card hidden and no messages
         <></>
       ) : (
-        messages.map((m) => (
-          <MessageBubble key={m.id} message={m} />
-        ))
+        (() => {
+          console.log('🎨 Rendering messages:', messages.length, messages);
+          return messages.map((m) => (
+            <MessageBubble key={m.id} message={m} />
+          ));
+        })()
       )}
     </div>
 
@@ -348,7 +445,13 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         <span className="transcript-toolbar-button-text">Report</span>
       </button>
 
-      {/* Waveform UI - integrated into footer */}
+      {/* Congrats banner appears above the waveform when an AI-ended session finishes */}
+      {showCongratsBanner && (
+        <div className="congrats-banner-wrapper">
+          <CongratsBanner onBegin={handleSeeFeedback} />
+        </div>
+      )}
+
       <Waveform 
         isAISpeaking={isAISpeaking}
         isUserSpeaking={isUserSpeaking}

@@ -1,0 +1,68 @@
+/* Main home page container */
+.home-main {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Bottom 2/3 body section */
+.home-body {
+  flex: 1;
+  min-height: 66.67vh; /* 2/3 of viewport height */
+  padding: 40px 80px;
+  background-color: #ffffff;
+}
+
+.home-body-wrapper {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Content area */
+.home-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 400px;
+  margin-top: -100px; /* Move up to create overlay effect */
+  position: relative;
+  z-index: 5;
+}
+
+.lessons-container {
+  width: 100%;
+  max-width: 2000px; /* Increased max width */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 16px gap between the two sections */
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .home-body {
+    padding: 32px 40px;
+  }
+  
+  .home-content {
+    margin-top: -40px; /* Less overlap on tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .home-body {
+    padding: 24px 20px;
+  }
+  
+  .home-content {
+    margin-top: -20px; /* Even less overlap on mobile */
+  }
+  
+  .lessons-container {
+    max-width: 100%;
+  }
+} 

@@ -1,0 +1,100 @@
+/* Main feedback page container */
+.feedback-main {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Bottom 2/3 body section */
+.feedback-body {
+  flex: 1;
+  min-height: 66.67vh; /* 2/3 of viewport height */
+  padding: 40px 80px;
+  background-color: #ffffff;
+}
+
+.feedback-body-wrapper {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Content area */
+.feedback-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 400px;
+  margin-top: 80px; /* Reduced gap between FeedbackDialog and content frames */
+  position: relative;
+  z-index: 5;
+}
+
+.frames-container {
+  width: 100%;
+  max-width: 2000px; /* Increased max width */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 16px gap between the two sections */
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .feedback-body {
+    padding: 32px 40px;
+  }
+  
+  .feedback-content {
+    margin-top: 60px; /* Reduced spacing for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .feedback-body {
+    padding: 24px 20px;
+  }
+  
+  .feedback-content {
+    margin-top: 40px; /* Reduced spacing for mobile */
+  }
+  
+  .frames-container {
+    max-width: 100%;
+  }
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 50;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loading-sun {
+  width: 67px; /* Reduced by 30% from 96px */
+  height: 67px; /* Reduced by 30% from 96px */
+  animation: spin-scale 2.5s cubic-bezier(.22,1,.36,1) infinite;
+}
+
+.loading-text {
+  color: #6B7280;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@keyframes spin-scale {
+  0%   { transform: rotate(0deg)   scale(1);   }
+  50%  { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1);   }
+} 

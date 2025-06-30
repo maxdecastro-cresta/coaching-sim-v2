@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { inter } from './fonts';
 import './globals.css';
+import { SessionProvider } from '@/contexts/SessionContext';
 
 export const metadata: Metadata = {
   title: 'Coaching Simulator',
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="font-sans antialiased">
-        {children}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import { FC, useState, useEffect } from "react";
 import { BookOpen, Lightbulb, ClipboardCheck, Target } from "lucide-react";
 import Image from "next/image";
+import { useLesson } from '@/contexts/LessonContext';
 import './SidePane.css';
 import { generateHint, Message as HintMessage } from "../lib/generateHint";
 import { Message } from "./MessageBubble";
@@ -17,6 +18,7 @@ interface SidePaneProps {
 }
 
 export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], resetSignal }) => {
+  const lesson = useLesson();
   const [activeTab, setActiveTab] = useState<TabType>('quizzes');
   const [hints, setHints] = useState<string[]>([]);
   const [loadingHint, setLoadingHint] = useState(false);
@@ -37,19 +39,18 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
     setQuizCompletedThisSession(true);
   };
 
-  // Check for "Jessica Brown" in AI messages to trigger quiz (only once per session)
+  // Trigger quiz when the lesson-specific keyword appears in the transcript.
   useEffect(() => {
-    const hasJessicaBrownMention = messages.some(message => 
-      message.from === 'ai' && 
-      message.text.toLowerCase().includes('jessica brown')
-    );
-    
-    if (hasJessicaBrownMention && !quizTriggered && !quizCompletedThisSession) {
+    const keyword = lesson.quiz.triggerKeyword?.toLowerCase();
+    if (!keyword) return;
+
+    const hasKeywordMention = messages.some((m) => m.text.toLowerCase().includes(keyword));
+
+    if (hasKeywordMention && !quizTriggered && !quizCompletedThisSession) {
       setQuizTriggered(true);
-      // Automatically switch to quizzes tab when quiz is triggered
       setActiveTab('quizzes');
     }
-  }, [messages, quizTriggered, quizCompletedThisSession]);
+  }, [messages, quizTriggered, quizCompletedThisSession, lesson.quiz.triggerKeyword]);
 
   const handleGenerateHint = async () => {
     try {
@@ -76,7 +77,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'quizzes':
-        // Show quiz panel only when triggered by "Jessica Brown" mention
+        // Show quiz panel only when triggered by "Jessica" mention
         if (quizTriggered) {
           return <QuizPanel onComplete={handleQuizComplete} />;
         }

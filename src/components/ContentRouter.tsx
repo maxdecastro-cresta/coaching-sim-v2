@@ -1,14 +1,17 @@
 import { usePathname } from 'next/navigation';
 import { DashboardContent } from '@/components/dashboard/DashboardContent';
-import { CoachingContent } from '@/components/pages/CoachingContent';
+import { HomeContent } from '@/components/pages/HomeContent';
 
 export function ContentRouter() {
   const pathname = usePathname();
 
   // Return the appropriate content based on the current pathname
   switch (pathname) {
+    case '/home':
+      return <HomeContent />;
     case '/coaching':
-      return <CoachingContent />;
+      // Legacy path: redirect logic is handled by /app/coaching route
+      return <DashboardContent />;
     case '/examples':
       return (
         <>

@@ -1,12 +1,6 @@
-"use client";
-
-import { MainLayout } from "@/components/layout/MainLayout";
-import { CoachingContent } from "@/components/pages/CoachingContent";
+import { redirect } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <MainLayout>
-      <CoachingContent />
-    </MainLayout>
-  );
+  // Redirect to home page
+  redirect('/home');
 }

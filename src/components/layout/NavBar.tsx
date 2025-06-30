@@ -2,9 +2,20 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSidebar } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import './NavBar.css';
 
 export function NavBar() {
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === '/coaching') {
+      return pathname === path || pathname.startsWith('/lesson/');
+    }
+    return pathname === path;
+  };
+
   return (
     <nav className="navbar">
     
@@ -26,15 +37,18 @@ export function NavBar() {
       
       {/* Navigation Tabs Section */}
       <div className="navbar-tabs">
-        <a href="#" className="navbar-tab">
+        <Link href="/home" className={`navbar-tab ${isActive('/home') ? 'active' : ''}`}>
           Home
-        </a>
-        <a href="#" className="navbar-tab active">
+        </Link>
+        <Link href="/coaching" className={`navbar-tab ${isActive('/coaching') ? 'active' : ''}`}>
           Coaching
-        </a>
-        <a href="#" className="navbar-tab">
+        </Link>
+        <Link href="/sandbox" className={`navbar-tab ${isActive('/sandbox') ? 'active' : ''}`}>
+          Sandbox
+        </Link>
+        <Link href="#" className="navbar-tab">
           Rewards
-        </a>
+        </Link>
       </div>
     </nav>
   );

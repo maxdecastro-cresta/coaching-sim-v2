@@ -1,0 +1,185 @@
+/* Performance Frame */
+.performance-frame {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px; /* Reduced from 24px */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-height: 400px; /* Reduced from 200px */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Reduced from 1.5rem */
+}
+
+/* Review Header */
+.review-header {
+  display: flex;
+  flex-direction: column; /* Stack vertically */
+  align-items: flex-start; /* Align to left */
+  gap: 0.5rem; /* Smaller gap for vertical stacking */
+}
+
+.review-title {
+  font-size: 16px; /* Reduced from 1.5rem */
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.lesson-duration {
+  font-size: 14px; /* Reduced from 1rem */
+  color: #6B7280;
+}
+
+.lesson-duration strong {
+  font-weight: 600;
+}
+
+/* Review Card */
+.review-card {
+  display: grid;
+  grid-template-columns: 200px 1fr; /* Reduced from 260px */
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px; /* Reduced from 16px */
+}
+
+/* Performance Pane (Left) */
+.performance-pane {
+  padding: 1.5rem 1.25rem; /* Reduced from 2.5rem 2rem */
+  text-align: left; /* Changed from center */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Changed from center */
+  justify-content: space-between; /* Push button to bottom */
+  height: 100%; /* Ensure full height */
+}
+
+.performance-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.pane-title {
+  font-size: 14px; /* Reduced from 1.125rem */
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.score-value {
+  font-size: 2rem; /* Reduced from 3rem */
+  font-weight: 700;
+  line-height: 1;
+  color: #1f2937;
+  margin: 0;
+}
+
+.score-unit {
+  font-size: 0.55em;
+}
+
+.score-label {
+  color: #6B7280;
+  font-size: 12px; /* Reduced from 1rem */
+  margin: 0;
+}
+
+.report-link {
+  background: none;
+  border: none;
+  color: #6B7280;
+  font-size: 11px; /* Reduced from 0.9rem */
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 0.25rem; /* Reduced from 0.5rem */
+}
+
+.report-link:hover {
+  color: #111827;
+}
+
+/* Feedback Pane (Right) */
+.feedback-pane {
+  padding: 1.5rem 2rem 2rem; /* Reduced from 2.5rem 3rem 3rem */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Reduced from 1.5rem */
+}
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Reduced from 0.75rem */
+  border-bottom: 1px dashed #D1D5DB;
+  padding-bottom: 0.75rem; /* Reduced from 1rem */
+}
+
+.header-icon {
+  width: 20px; /* Reduced from 28px */
+  height: 20px; /* Reduced from 28px */
+  background-color: #D1D5DB;
+  border-radius: 50%;
+}
+
+.feedback-header h3 {
+  font-size: 14px; /* Reduced from 1.125rem */
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.feedback-section-title {
+  font-size: 13px; /* Reduced from 1rem */
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.feedback-box {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1.4;
+  max-height: 300px; /* Increased height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.feedback-box p {
+  margin: 0 0 1rem 0;
+}
+
+.feedback-box p:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .performance-frame {
+    padding: 16px;
+  }
+  
+  .review-card {
+    grid-template-columns: 1fr; /* stacks panes */
+  }
+  
+  .performance-pane {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: 1rem 1.25rem; /* Reduced from 1.5rem 1.75rem */
+  }
+  
+  .score-value {
+    font-size: 1.75rem; /* Reduced from 2.25rem */
+  }
+  
+  .feedback-pane {
+    padding: 1rem 1.25rem 1.25rem; /* Reduced from 1.5rem 2rem 2rem */
+  }
+} 

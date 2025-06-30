@@ -3,6 +3,8 @@
 import { FC, useState } from "react";
 import Image from "next/image";
 import { ChevronRight, Check } from "lucide-react";
+import { useLesson } from "@/contexts/LessonContext";
+import { useQuiz } from "@/contexts/QuizContext";
 import "./QuizPanel.css";
 
 interface QuizPanelProps {
@@ -10,26 +12,31 @@ interface QuizPanelProps {
 }
 
 export const QuizPanel: FC<QuizPanelProps> = ({ onComplete }) => {
+  const { quiz } = useLesson();
+  const { setResult } = useQuiz();
+
   const [isCompleted, setIsCompleted] = useState(false);
-  const [customerName, setCustomerName] = useState("");
-  const [customerIssue, setCustomerIssue] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const handleSubmit = () => {
-    // Show completion state
+    if (selectedIndex === null) return;
+
+    // Store result in context
+    const isCorrect = selectedIndex === quiz.correctChoiceIndex;
+    setResult(selectedIndex, isCorrect);
+
+    // Show completion animation
     setIsCompleted(true);
-    
-    // After 2 seconds, trigger the completion callback and reset
+
+    // After 2 seconds call onComplete
     setTimeout(() => {
       setIsCompleted(false);
-      setCustomerName("");
-      setCustomerIssue("");
-      if (onComplete) {
-        onComplete();
-      }
+      setSelectedIndex(null);
+      if (onComplete) onComplete();
     }, 2000);
   };
 
-  // Show completion view
+  // Completion view
   if (isCompleted) {
     return (
       <div className="quiz-content">
@@ -42,58 +49,55 @@ export const QuizPanel: FC<QuizPanelProps> = ({ onComplete }) => {
       </div>
     );
   }
+
   return (
     <div className="quiz-content">
       <div className="quiz-main-content">
         {/* Header */}
         <div className="quiz-header">
           <div className="quiz-header-left">
-            <span className="quiz-header-title">Finding information for an upsell</span>
+            <span className="quiz-header-title">{quiz.question}</span>
           </div>
         </div>
-        <p className="quiz-subtitle">Fill in the fields below</p>
+        <p className="quiz-subtitle">Select the best answer</p>
 
-        {/* Question image */}
-        <div className="quiz-image-wrapper">
-          <Image
-            src="/QuizTestImage.png"
-            alt="Quiz reference"
-            width={300}
-            height={200}
-            className="quiz-image"
-          />
-        </div>
+        {/* Image */}
+        {quiz.imageSrc && (
+          <div className="quiz-image-wrapper">
+            <Image
+              src={quiz.imageSrc}
+              alt="Quiz reference"
+              width={300}
+              height={200}
+              className="quiz-image"
+            />
+          </div>
+        )}
 
-        {/* Input fields */}
-        <div className="quiz-inputs">
-          <label className="quiz-input-label" htmlFor="customerName">Customer Name</label>
-          <input
-            id="customerName"
-            type="text"
-            className="quiz-input"
-            placeholder="Enter the information"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-          />
-
-          <label className="quiz-input-label" htmlFor="customerIssue">Customer Issue</label>
-          <input
-            id="customerIssue"
-            type="text"
-            className="quiz-input"
-            placeholder="Enter the information"
-            value={customerIssue}
-            onChange={(e) => setCustomerIssue(e.target.value)}
-          />
+        {/* Choices */}
+        <div className="quiz-inputs" role="radiogroup">
+          {quiz.choices.map((choice, idx) => (
+            <label key={idx} className="quiz-input-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <input
+                type="radio"
+                name="quiz-choice"
+                value={idx}
+                checked={selectedIndex === idx}
+                onChange={() => setSelectedIndex(idx)}
+                style={{ marginRight: 6 }}
+              />
+              {choice}
+            </label>
+          ))}
         </div>
       </div>
 
       {/* Submit button */}
       <div className="quiz-submit-wrapper">
-        <button 
+        <button
           className="quiz-submit-button"
           onClick={handleSubmit}
-          disabled={!customerName.trim() || !customerIssue.trim()}
+          disabled={selectedIndex === null}
         >
           <span>Complete Quiz</span>
           <ChevronRight className="quiz-submit-icon" />

@@ -4,31 +4,28 @@ import React, { useState, useEffect } from 'react';
 
 interface WaveformProps {
   isAISpeaking?: boolean;
-  isUserSpeaking?: boolean;
+  isUserSpeaking?: boolean; // kept for backwards compatibility but no longer used
 }
 
 const Waveform: React.FC<WaveformProps> = ({ 
   isAISpeaking = false,
-  isUserSpeaking = false
 }) => {
   const [tick, setTick] = useState(0);
 
-  // Simple animation ticker
+  // Simple animation ticker - only runs when AI is speaking
   useEffect(() => {
-    if (!isAISpeaking && !isUserSpeaking) return;
+    if (!isAISpeaking) return;
 
     const interval = setInterval(() => {
       setTick(prev => prev + 1);
     }, 150);
 
     return () => clearInterval(interval);
-  }, [isAISpeaking, isUserSpeaking]);
+  }, [isAISpeaking]);
 
-  // Determine colors
-  const isActive = isAISpeaking || isUserSpeaking;
-  let barColor = 'bg-gray-400'; // Default
-  if (isAISpeaking) barColor = 'bg-blue-600'; // Blue for AI
-  if (isUserSpeaking) barColor = 'bg-black'; // Black for user
+  // Determine colors - now only blue for AI speaking or gray for silence
+  const isActive = isAISpeaking;
+  const barColor = isAISpeaking ? 'bg-blue-600' : 'bg-gray-400';
 
   // Generate bars with simple animation
   const bars = Array.from({ length: 30 }, (_, i) => {

@@ -303,4 +303,30 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Congrats banner wrapper to position above waveform */
+.congrats-banner-wrapper {
+  position: absolute;
+  bottom: 6rem; /* 96px roughly, above waveform bottom-12 (48px) + its height */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100; /* above waveform (z-10) and dialogs (1000) */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  pointer-events: auto;
+  animation: slideUpFade 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  isolation: isolate; /* Create new stacking context */
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 } 

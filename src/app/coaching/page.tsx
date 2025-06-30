@@ -1,12 +1,6 @@
-"use client";
-
-import { MainLayout } from "@/components/layout/MainLayout";
-import { CoachingContent } from "@/components/pages/CoachingContent";
+import { redirect } from 'next/navigation';
 
 export default function CoachingPage() {
-  return (
-    <MainLayout>
-      <CoachingContent />
-    </MainLayout>
-  );
+  // Redirect legacy /coaching to the first lesson
+  redirect('/lesson/need-to-consult-spouse');
 } 
