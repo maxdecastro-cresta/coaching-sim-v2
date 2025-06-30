@@ -16,6 +16,15 @@ export function DueLessons() {
       <div className="lessons-row">
         <LessonCard
           status="Incomplete"
+          duration="5 mins"
+          title="Handle Objection – Package Too Expensive"
+          dueDate="June 20th 2025"
+          difficulty="Easy"
+          creditPoints={20}
+          onBeginLesson={() => router.push('/lesson/package-too-expensive')}
+        />
+        <LessonCard
+          status="Incomplete"
           duration="20 mins"
           title="Handle Objection – Need to Consult with Spouse"
           dueDate="June 17th 2025"

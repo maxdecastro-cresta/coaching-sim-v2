@@ -9,6 +9,11 @@ interface PerformanceFrameProps {
 export function PerformanceFrame({ scorePct, notes }: PerformanceFrameProps) {
   const duration = '—';
 
+  // Convert markdown bold syntax to HTML
+  const renderMarkdown = (text: string) => {
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  };
+
   return (
     <div className="performance-frame">
       <div className="review-header">
@@ -50,7 +55,7 @@ export function PerformanceFrame({ scorePct, notes }: PerformanceFrameProps) {
 
           <div className="feedback-box">
             {notes.split('\n\n').map((para, i) => (
-              <p key={i}>{para}</p>
+              <p key={i} dangerouslySetInnerHTML={{ __html: renderMarkdown(para) }} />
             ))}
           </div>
         </article>
