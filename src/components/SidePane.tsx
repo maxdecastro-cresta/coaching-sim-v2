@@ -53,6 +53,7 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
 
   const handleGenerateHint = async () => {
     try {
+      console.log('handleGenerateHint called with messages:', messages);
       setLoadingHint(true);
       setHintError(null);
       // Convert Message format to HintMessage format
@@ -60,9 +61,12 @@ export const SidePane: FC<SidePaneProps> = ({ duration = "0:00", messages = [], 
         role: msg.from === 'ai' ? 'assistant' : 'user',
         content: msg.text
       }));
+      console.log('Converted hintMessages:', hintMessages);
       const hint = await generateHint(hintMessages);
+      console.log('Generated hint:', hint);
       setHints(prev => [hint, ...prev]);
     } catch (err: any) {
+      console.error('Error in handleGenerateHint:', err);
       setHintError(err.message || 'Failed to generate hint');
     } finally {
       setLoadingHint(false);

@@ -3,7 +3,9 @@
  * The hint returned is context-aware, encouraging, and ≤10 words.
  */
 export async function generateHint(messages: Message[]): Promise<string> {
+  console.log('generateHint called with messages:', messages);
   const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  console.log('API key exists:', !!apiKey);
   if (!apiKey) {
     throw new Error("Missing NEXT_PUBLIC_OPENAI_API_KEY environment variable");
   }
@@ -12,6 +14,8 @@ export async function generateHint(messages: Message[]): Promise<string> {
   const conversationText = messages
     .map((msg) => `${msg.role === "user" ? "Agent" : "Customer"}: ${msg.content}`)
     .join("\n");
+
+  console.log('Formatted conversation text:', conversationText);
 
   const prompt = `You are a coaching assistant helping a call center agent-in-training during a simulated customer conversation.
 
@@ -28,13 +32,13 @@ ${conversationText}
 
 Give the agent a helpful hint that encourages what they should do or ask the customer next to help resolve their issue.
 
-\u{1F9E0} Your response must be:
+🧠 Your response must be:
 - No more than **10 words**
 - NOT a script or full reply
 
-\u{2705} Example:  
+✅ Example:  
 "Ask how long the bag has been missing."  
-\u{274C} Avoid:  
+❌ Avoid:  
 "Say: 'Can you tell me your baggage tag number?'"
 
 ---
@@ -42,6 +46,7 @@ Give the agent a helpful hint that encourages what they should do or ask the cus
 Hint (10 words max):`;
 
   try {
+    console.log('Making API request to OpenAI...');
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -67,18 +72,25 @@ Hint (10 words max):`;
       }),
     });
 
+    console.log('API response status:', response.status);
+    console.log('API response ok:', response.ok);
+
     if (!response.ok) {
       const errText = await response.text();
+      console.error('API error response:', errText);
       throw new Error(`OpenAI request failed: ${errText}`);
     }
 
     const data = await response.json();
+    console.log('API response data:', data);
     const hint = data.choices?.[0]?.message?.content as string | undefined;
 
     if (!hint) {
+      console.error('No hint in response data');
       throw new Error("No hint returned by OpenAI");
     }
 
+    console.log('Successfully generated hint:', hint.trim());
     return hint.trim();
   } catch (error: any) {
     console.error("OpenAI Hint Generation Error:", error);
