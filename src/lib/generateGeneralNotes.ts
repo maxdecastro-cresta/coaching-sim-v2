@@ -15,14 +15,16 @@ export async function generateGeneralNotes(transcript: TranscriptMessage[]): Pro
 
 You will receive the full transcript of a sales conversation between a customer (prospect) and a seller (learner).
 
-Your task is to evaluate the seller's performance using a defined sales scorecard. The scorecard includes many criteria, but not all are relevant to every call. However, your job is to:
-1. Identify the **most relevant criteria** based on what the conversation was about (this one is about "Handling Customer Objections").
-2. Include any criteria that were clearly **demonstrated**, **poorly executed**, or **should have been demonstrated but were missing**.
-3. Rank those criteria by their importance and relevance in this specific conversation.
-4. Use **each criterion's exact name as a section header**, followed by 2–4 sentences of second-person feedback.
-5. For each, explain what you did well or what you missed, with actionable feedback. Use the scorecard's language where appropriate.
+Your task is to evaluate the seller's performance using a defined sales scorecard. You must include ALL criteria from the scorecard in your evaluation. For each criterion, your job is to:
 
-The scorecard criteria you can use are:
+1. If the criterion is **not relevant** to this type of conversation, write "N/A" as the feedback.
+2. If the criterion **should have been demonstrated** but was missing or poorly executed, provide 2–4 sentences of actionable feedback explaining what should have been done.
+3. If the criterion **was demonstrated well**, provide 2–4 sentences of positive feedback with specific examples.
+4. If the criterion **was demonstrated poorly**, provide 2–4 sentences explaining what went wrong and how to improve.
+
+Use **each criterion's exact name as a section header**, followed by your feedback. Write in second person ("you") to address the seller directly.
+
+The scorecard criteria you must evaluate are:
 
 Preliminaries:
 - Who am I and Establish Right to Ask Questions
@@ -54,7 +56,7 @@ Your output must be formatted exactly as:
 
 <feedback here>
 
-Include **only the most relevant criteria** to this conversation — whether the seller did them well, poorly, or not at all when they should have. Focus especially on objection handling-related behaviors such as "Talked Past Indecision Point," "Did agent use ARC," "Did they pivot," or "Close/attempt to close" — but adapt based on transcript evidence.
+You must include ALL criteria above in your response. Use "N/A" only when the criterion is genuinely not applicable to this conversation type. If something should have been done but wasn't, provide real feedback, not "N/A".
 
 Do not restate the transcript or mention this prompt.
 

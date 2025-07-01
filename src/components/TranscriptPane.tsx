@@ -11,6 +11,8 @@ import './TranscriptPane.css';
 import { useLesson } from '@/contexts/LessonContext';
 import { useSession } from '@/contexts/SessionContext';
 import { CongratsBanner } from '@/components/CongratsBanner';
+import { Confetti } from '@/components/Confetti';
+import { AnimatedLoader } from '@/components/AnimatedLoader';
 
 interface TranscriptPaneProps {
   duration: string;
@@ -35,6 +37,8 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [showMicDialog, setShowMicDialog] = useState(false);
   const [showCongratsBanner, setShowCongratsBanner] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isNavigatingToFeedback, setIsNavigatingToFeedback] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const userEndedRef = useRef(false);
@@ -71,6 +75,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
         navigateToFeedback();
       } else {
         setShowCongratsBanner(true);
+        setShowConfetti(true);
       }
     },
     onMessage: (messageData: any) => {
@@ -215,7 +220,13 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
   const navigateToFeedback = useCallback(() => {
     if (hasNavigatedRef.current) return;
     hasNavigatedRef.current = true;
-    endLesson();
+    setIsNavigatingToFeedback(true);
+    // Hide confetti when starting navigation
+    setShowConfetti(false);
+    // Add a brief delay to show the loading animation before navigating
+    setTimeout(() => {
+      endLesson();
+    }, 500);
   }, [endLesson]);
 
   const stopConversation = useCallback(async () => {
@@ -491,6 +502,16 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
             <p className="report-dialog-text">Haven't set this up lol</p>
           </div>
         </div>
+      </div>
+    )}
+
+    {/* Confetti for lesson completion */}
+    <Confetti show={showConfetti} duration={3000} />
+
+    {/* Loading animation when navigating to feedback */}
+    {isNavigatingToFeedback && (
+      <div className="feedback-loading-overlay">
+        <AnimatedLoader />
       </div>
     )}
   </section>

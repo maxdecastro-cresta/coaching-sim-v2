@@ -79,7 +79,7 @@ export function TranscriptFrame({ analysis }: TranscriptFrameProps) {
                     <div className="scorecard-caption">Scorecard Evaluation</div>
                     <div className="scorecard-section">
                       <span className="bullet-point">•</span>
-                      <span className="criterion-text">(coming soon)</span>
+                      <span className="criterion-text">{item.criterion}</span>
                     </div>
                   </div>
                 </div>
