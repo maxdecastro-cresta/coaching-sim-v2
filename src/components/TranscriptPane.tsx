@@ -422,7 +422,13 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
 
         {/* Start/End Lesson button */}
         <button
-          onClick={isConnected ? stopConversation : startConversation}
+          onClick={
+            isConnected 
+              ? stopConversation 
+              : (!isConnected && messages.length > 0) 
+                ? navigateToFeedback 
+                : startConversation
+          }
           disabled={isLoading}
           className={`transcript-lesson-button ${
             isConnected
@@ -433,7 +439,16 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
           }`}
         >
           {isConnected && <Phone className="transcript-lesson-button-icon" />}
-          <span>{isLoading ? 'Loading...' : (isConnected ? 'End Lesson' : 'Start Lesson')}</span>
+          <span>
+            {isLoading 
+              ? 'Loading...' 
+              : isConnected 
+                ? 'End Lesson' 
+                : (!isConnected && messages.length > 0) 
+                  ? 'View Feedback' 
+                  : 'Start Lesson'
+            }
+          </span>
         </button>
 
         {/* Pause */}
@@ -466,6 +481,7 @@ export const TranscriptPane: FC<TranscriptPaneProps> = ({ duration, setDuration,
       <Waveform 
         isAISpeaking={isAISpeaking}
         isUserSpeaking={isUserSpeaking}
+        isLessonComplete={!isConnected && messages.length > 0}
       />
     </footer>
 

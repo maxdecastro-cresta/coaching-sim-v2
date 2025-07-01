@@ -1,14 +1,26 @@
+export interface QuizInputSpec {
+  label: string;
+  placeholder: string;
+  correctAnswer: string | string[] | 'any';
+}
+
 export interface QuizSpec {
   /** Keyword in the transcript that triggers the quiz to appear */
   triggerKeyword: string;
   /** The quiz question shown in the header */
   question: string;
-  /** Three answer choices, exactly one is correct */
-  choices: string[];
-  /** Index (0-based) of the correct choice in the `choices` array */
-  correctChoiceIndex: number;
-  /** Image displayed above the choices */
+  /** Three answer choices, exactly one is correct - only for multiple choice */
+  choices?: string[];
+  /** Index (0-based) of the correct choice in the `choices` array - only for multiple choice */
+  correctChoiceIndex?: number;
+  /** Expected answer(s) for freeform input - only for single freeform */
+  correctAnswer?: string | string[];
+  /** Multiple input fields for complex freeform - only for multi-input freeform */
+  inputs?: QuizInputSpec[];
+  /** Image displayed above the choices/input */
   imageSrc: string;
+  /** Quiz type - defaults to multiple choice for backward compatibility */
+  type?: 'multiple-choice' | 'freeform';
 }
 
 export interface LessonConfig {

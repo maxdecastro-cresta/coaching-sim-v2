@@ -281,7 +281,7 @@
 .hints-button {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 6px 6px;
   background-color: #2563eb;
   border: 1px solid #2563eb;
@@ -325,7 +325,7 @@
 .hint-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 6px 6px;
   background-color: #f3f4f6; /* light grey */
   border: 1px solid #d1d5db; /* grey border */

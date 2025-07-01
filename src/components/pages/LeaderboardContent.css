@@ -1,0 +1,82 @@
+/* Main leaderboard page container */
+.leaderboard-main {
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Bottom 2/3 body section */
+.leaderboard-body {
+  flex: 1;
+  min-height: 66.67vh; /* 2/3 of viewport height */
+  padding: 40px 80px;
+  background-color: #ffffff;
+}
+
+.leaderboard-body-wrapper {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Content area */
+.leaderboard-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 400px;
+  margin-top: 80px; /* Reduced gap between dialog and content frames */
+  position: relative;
+  z-index: 5;
+}
+
+.frames-container {
+  width: 100%;
+  max-width: 2000px; /* Increased max width */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 16px gap between the two sections */
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .leaderboard-body {
+    padding: 32px 40px;
+  }
+  
+  .leaderboard-content {
+    margin-top: 60px; /* Reduced spacing for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .leaderboard-body {
+    padding: 24px 20px;
+  }
+  
+  .leaderboard-content {
+    margin-top: 40px; /* Reduced spacing for mobile */
+  }
+  
+  .frames-container {
+    max-width: 100%;
+  }
+}
+
+/* Loading overlay (placeholder for future use) */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 50;
+  flex-direction: column;
+  gap: 12px;
+} 

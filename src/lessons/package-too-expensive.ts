@@ -19,18 +19,25 @@ export const packageTooExpensiveLesson: LessonConfig = {
     illustrationSrc: '/LessonIntro.png',
     paragraphs: [
       'The customer lives off a low fixed income, but is interested in life insurance. He is 60 years old and does not have a plan in place for his final expenses. His main beneficiaries would be his caregiver and his sister. He is open to a cremation at $1200, although he has expressed some interest in life insurance.',
-      'You have offered him a $2000 policy, where he would pay $14 a month. Overcome his objection to the extra $800, and upsell him to a $2000 policy.'
+      'You have offered him a $2000 policy although he is unsure if he can afford it. Overcome his objection to the extra $800, and upsell him to a $2000 policy.'
     ]
   },
   quiz: {
     triggerKeyword: 'month',
     question: 'What is $2000 a month per day?',
-    choices: [
-      '$20',
-      '$14',
-      '$16'
+    type: 'freeform',
+    inputs: [
+      {
+        label: 'Customer name',
+        placeholder: 'Enter full name',
+        correctAnswer: 'any' // Accept any input for customer name
+      },
+      {
+        label: 'Customer Plan',
+        placeholder: 'Enter Customer Plan',
+        correctAnswer: 'any' // Accept any input for customer plan
+      }
     ],
-    correctChoiceIndex: 1,
-    imageSrc: '/QuizTestImage.png'
+    imageSrc: '/Test-Objection.png'
   }
 }; 

@@ -46,6 +46,9 @@ export function NavBar() {
         <Link href="/sandbox" className={`navbar-tab ${isActive('/sandbox') ? 'active' : ''}`}>
           Sandbox
         </Link>
+        <Link href="/leaderboard" className={`navbar-tab ${isActive('/leaderboard') ? 'active' : ''}`}>
+          Leaderboard
+        </Link>
         <Link href="#" className="navbar-tab">
           Rewards
         </Link>
