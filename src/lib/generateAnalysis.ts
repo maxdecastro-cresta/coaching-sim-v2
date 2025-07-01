@@ -4,10 +4,6 @@ import { TranscriptMessage } from '@/lessons/evaluation';
 export const ANALYSIS_COUNT = 3; // Easily tweakable max number of analysis items to return
 
 export const SCORECARD_CRITERIA = [
-  // Preliminaries
-  'Who am I and Establish Right to Ask Questions',
-  'Did they transition to a sales conversation? (From a non-sales call reason)',
-  'Did they demonstrate call control by focusing on needs-based questions?',
   // Situation Questions
   'Understand Coverage Goals',
   'Understand Existing Coverage',
@@ -17,8 +13,6 @@ export const SCORECARD_CRITERIA = [
   'Did they position situation questions?',
   'Did they ask additional situation questions?',
   // Elevate Related Questions
-  'Did they provide Advantage Statements before their offer?',
-  'Are they using information gathered from Discovery/Situation Questions for a benefit statement?',
   'Present an Offer',
   'Did they close/attempt to close?',
   'Did agent use ARC?',

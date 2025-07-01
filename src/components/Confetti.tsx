@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import './Confetti.css';
 
 interface ConfettiProps {
@@ -6,72 +6,74 @@ interface ConfettiProps {
   duration?: number; // duration in milliseconds
 }
 
-interface ConfettiPiece {
-  id: number;
-  color: string;
-  left: number;
-  delay: number;
-  duration: number;
-  rotation: number;
-  size: number;
-}
-
-const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'];
+const CONFETTI_COLORS = [
+  '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', 
+  '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f'
+];
 
 export function Confetti({ show, duration = 3000 }: ConfettiProps) {
-  const [pieces, setPieces] = useState<ConfettiPiece[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!show) {
-      setPieces([]);
-      return;
+    if (!show || !containerRef.current) return;
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
 
-    // Generate confetti pieces
-    const newPieces: ConfettiPiece[] = [];
-    const pieceCount = 150; // Increased from 50 to 150 for more confetti
+    // Clear any existing confetti
+    containerRef.current.innerHTML = '';
 
-    for (let i = 0; i < pieceCount; i++) {
-      newPieces.push({
-        id: i,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        left: Math.random() * 100, // Random horizontal position (0-100%)
-        delay: Math.random() * 200, // Stagger the start times slightly
-        duration: 2000 + Math.random() * 1000, // Random fall duration (2-3s)
-        rotation: Math.random() * 360, // Random initial rotation
-        size: 6 + Math.random() * 4, // Random size (6-10px)
-      });
-    }
+    // Create confetti pieces
+    const createConfetti = () => {
+      if (!containerRef.current) return;
 
-    setPieces(newPieces);
+      for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        
+        // Random properties
+        const left = Math.random() * 100;
+        const delay = Math.random() * 200;
+        const fallDuration = 2000 + Math.random() * 1000;
+        const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        const size = 4 + Math.random() * 6;
+        const rotation = Math.random() * 360;
+        
+        // Set styles
+        confetti.style.left = `${left}%`;
+        confetti.style.backgroundColor = color;
+        confetti.style.width = `${size}px`;
+        confetti.style.height = `${size}px`;
+        confetti.style.animationDelay = `${delay}ms`;
+        confetti.style.animationDuration = `${fallDuration}ms`;
+        confetti.style.transform = `rotate(${rotation}deg)`;
+        
+        containerRef.current.appendChild(confetti);
+      }
+    };
 
-    // Clean up after animation completes
-    const cleanup = setTimeout(() => {
-      setPieces([]);
+    // Start confetti immediately
+    createConfetti();
+
+    // Clean up after duration
+    timeoutRef.current = setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
     }, duration);
 
-    return () => clearTimeout(cleanup);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
   }, [show, duration]);
 
-  if (!show || pieces.length === 0) return null;
+  if (!show) return null;
 
-  return (
-    <div className="confetti-container">
-      {pieces.map((piece) => (
-        <div
-          key={piece.id}
-          className="confetti-piece"
-          style={{
-            backgroundColor: piece.color,
-            left: `${piece.left}%`,
-            animationDelay: `${piece.delay}ms`,
-            animationDuration: `${piece.duration}ms`,
-            transform: `rotate(${piece.rotation}deg)`,
-            width: `${piece.size}px`,
-            height: `${piece.size}px`,
-          }}
-        />
-      ))}
-    </div>
-  );
+  return <div ref={containerRef} className="confetti-container" />;
 } 

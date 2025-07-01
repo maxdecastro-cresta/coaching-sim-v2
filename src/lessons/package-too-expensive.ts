@@ -24,7 +24,7 @@ export const packageTooExpensiveLesson: LessonConfig = {
   },
   quiz: {
     triggerKeyword: 'month',
-    question: 'What is $2000 a month per day?',
+    question: 'Enter the customer name and plan',
     type: 'freeform',
     inputs: [
       {
