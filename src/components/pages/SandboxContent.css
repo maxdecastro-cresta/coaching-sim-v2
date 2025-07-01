@@ -50,6 +50,22 @@
   background-color: #047857;
 }
 
+.sandbox-demo-button-success {
+  background-color: #2ECE81;
+}
+
+.sandbox-demo-button-success:hover {
+  background-color: #1faa63;
+}
+
+.sandbox-demo-button-fail {
+  background-color: #EF4444;
+}
+
+.sandbox-demo-button-fail:hover {
+  background-color: #dc2626;
+}
+
 .sandbox-area {
   border: 1px dashed #ccc;
   border-radius: 0.5rem;
@@ -64,6 +80,15 @@
   border: 1px solid #eee;
   border-radius: 0.5rem;
   background: #fafafa;
+}
+
+/* Animated header wrapper for sandbox testing */
+.animated-header-wrapper {
+  margin-top: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: white;
 }
 
 /* Loading overlay - copied from FeedbackContent.css */

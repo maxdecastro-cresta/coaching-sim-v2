@@ -3,11 +3,18 @@ import './SandboxContent.css';
 import { CongratsBanner } from '@/components/CongratsBanner';
 import { Confetti } from '@/components/Confetti';
 import { AnimatedLoader } from '@/components/AnimatedLoader';
+import { AnimatedFeedbackHeader } from '@/components/AnimatedFeedbackHeader';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { FeedbackDialog } from '@/components/FeedbackDialog';
 
 export function SandboxContent() {
   const [showBanner, setShowBanner] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const [showAnimatedLoader, setShowAnimatedLoader] = useState(false);
+  const [showAnimatedHeader, setShowAnimatedHeader] = useState(false);
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
+  const [dialogPassed, setDialogPassed] = useState<boolean | null>(null);
+  const [dialogScore, setDialogScore] = useState<number | null>(null);
 
   const handleDemoClick = () => {
     setShowBanner(false);
@@ -25,6 +32,23 @@ export function SandboxContent() {
     setShowAnimatedLoader(true);
     // Auto-hide after 4 seconds for demo purposes
     setTimeout(() => setShowAnimatedLoader(false), 4000);
+  };
+
+  const handleAnimatedHeaderClick = () => {
+    setShowAnimatedHeader(false);
+    // Small delay to ensure animation replays even if clicking button multiple times
+    setTimeout(() => setShowAnimatedHeader(true), 10);
+  };
+
+  const handleShowFeedbackDialog = (passed: boolean) => {
+    setDialogPassed(passed);
+    // Random score for demo
+    const randomScore = Math.floor(Math.random() * 31) + 70; // 70-100
+    setDialogScore(randomScore);
+    setShowFeedbackDialog(true);
+
+    // Auto-hide after 4 seconds
+    setTimeout(() => setShowFeedbackDialog(false), 4000);
   };
 
   return (
@@ -54,7 +78,37 @@ export function SandboxContent() {
         >
           Demo Animated Loader
         </button>
+
+        <button 
+          onClick={handleAnimatedHeaderClick}
+          className="sandbox-demo-button"
+        >
+          Demo Animated Feedback Header
+        </button>
+
+        <button
+          onClick={() => handleShowFeedbackDialog(true)}
+          className="sandbox-demo-button sandbox-demo-button-success"
+        >
+          Show Feedback Dialog (Passed)
+        </button>
+
+        <button
+          onClick={() => handleShowFeedbackDialog(false)}
+          className="sandbox-demo-button sandbox-demo-button-fail"
+        >
+          Show Feedback Dialog (Failed)
+        </button>
       </div>
+
+      {/* Feedback Dialog Demo - positioned at top for visibility */}
+      {showFeedbackDialog && (
+        <SidebarProvider>
+          <div className="feedback-dialog-wrapper">
+            <FeedbackDialog passed={dialogPassed} score={dialogScore} />
+          </div>
+        </SidebarProvider>
+      )}
 
       {/* Sandbox area: place new components below for quick iteration */}
       <div className="sandbox-area">
@@ -66,6 +120,15 @@ export function SandboxContent() {
             </div>
           )}
         </div>
+
+        {/* Animated Feedback Header Demo */}
+        {showAnimatedHeader && (
+          <div className="animated-header-wrapper">
+            <AnimatedFeedbackHeader 
+              onAnimationComplete={() => console.log('Feedback header animation complete!')} 
+            />
+          </div>
+        )}
       </div>
 
       {/* Confetti effect - appears above everything */}

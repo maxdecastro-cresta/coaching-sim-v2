@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { FeedbackHeader } from '@/components/FeedbackHeader';
+import { AnimatedFeedbackHeader } from '@/components/AnimatedFeedbackHeader';
 import { FeedbackDialog } from '@/components/FeedbackDialog';
 import { PerformanceFrame } from '@/components/PerformanceFrame';
 import { TranscriptFrame } from '@/components/TranscriptFrame';
@@ -11,6 +11,7 @@ import { generateAnalysis, AnalysisItem } from '@/lib/generateAnalysis';
 import { generateGeneralNotes } from '@/lib/generateGeneralNotes';
 import { getLessonEvaluationData } from '@/lessons/evaluation';
 import './FeedbackContent.css';
+import { AnimatedLoader } from '@/components/AnimatedLoader';
 
 export function FeedbackContent() {
   const { lesson, messages } = useSession();
@@ -56,19 +57,14 @@ export function FeedbackContent() {
   return (
     <main className="feedback-main">
       {/* Top 1/3 Header Section */}
-      <FeedbackHeader />
+      {!loading && <AnimatedFeedbackHeader />}
       
       {/* Result dialog overlay */}
       {!loading && passed !== null && (
         <FeedbackDialog passed={passed} score={score} />
       )}
       
-      {loading && (
-        <div className="loading-overlay">
-          <img src="/Sun.png" alt="Loading" className="loading-sun" />
-          <div className="loading-text">Loading...</div>
-        </div>
-      )}
+      {loading && <AnimatedLoader />}
       
       {/* Bottom 2/3 Content Section */}
       <div className="feedback-body">
