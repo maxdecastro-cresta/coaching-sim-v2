@@ -26,28 +26,15 @@ Use **each criterion's exact name as a section header**, followed by your feedba
 
 The scorecard criteria you must evaluate are:
 
-Preliminaries:
-- Who am I and Establish Right to Ask Questions
-- Did they transition to a sales conversation? (From a non-sales call reason)
-- Did they demonstrate call control by focusing on needs-based questions?
-
 Situation Questions:
 - Understand Coverage Goals
-- Understand Existing Coverage
 - Understand Budget
-- Understand Overall Health
 - Understand Beneficiary
-- Did they position situation questions?
-- Did they ask additional situation questions?
 
 Elevate Related Questions:
-- Did they provide Advantage Statements before their offer?
-- Are they using information gathered from Discovery/Situation Questions for a benefit statement?
 - Present an Offer
 - Did they close/attempt to close?
-- Did agent use ARC?
 - Talked Past Indecision Point
-- Did they pivot to additional product offerings?
 - Did the agent complete a needs-based assessment and make the right recommendation?
 
 Your output must be formatted exactly as:

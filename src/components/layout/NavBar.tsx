@@ -43,9 +43,6 @@ export function NavBar() {
         <Link href="/coaching" className={`navbar-tab ${isActive('/coaching') ? 'active' : ''}`}>
           Coaching
         </Link>
-        <Link href="/sandbox" className={`navbar-tab ${isActive('/sandbox') ? 'active' : ''}`}>
-          Sandbox
-        </Link>
         <Link href="/leaderboard" className={`navbar-tab ${isActive('/leaderboard') ? 'active' : ''}`}>
           Leaderboard
         </Link>

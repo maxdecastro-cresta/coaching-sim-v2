@@ -17,7 +17,7 @@ export function DueLessons() {
         <LessonCard
           status="Incomplete"
           duration="5 mins"
-          title="Handle Objection – Package Too Expensive"
+          title="Sales - Training: Handle Objection"
           dueDate="June 20th 2025"
           difficulty="Easy"
           creditPoints={20}
@@ -26,7 +26,7 @@ export function DueLessons() {
         <LessonCard
           status="Incomplete"
           duration="20 mins"
-          title="Handle Objection – Need to Consult with Spouse"
+          title="Sales - Training: Empathy"
           dueDate="June 17th 2025"
           difficulty="Easy"
           creditPoints={25}
@@ -35,7 +35,7 @@ export function DueLessons() {
         <LessonCard
           status="In progress"
           duration="30 mins"
-          title="Handle Objection – Price Is Too High"
+          title="Sales - Training: Assume the Sale"
           dueDate="June 18th 2025"
           difficulty="Medium"
           creditPoints={30}
@@ -44,7 +44,7 @@ export function DueLessons() {
         <LessonCard
           status="Incomplete"
           duration="18 mins"
-          title="Handle Objection – Considering Other Options"
+          title="Sales - Training: Empathy"
           dueDate="June 19th 2025"
           difficulty="Hard"
           creditPoints={35}
