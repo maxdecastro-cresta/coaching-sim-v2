@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { inter } from './fonts';
 import './globals.css';
 import { SessionProvider } from '@/contexts/SessionContext';
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: 'Coaching Simulator',
@@ -19,6 +20,7 @@ export default function RootLayout({
         <SessionProvider>
           {children}
         </SessionProvider>
+        <Analytics />
       </body>
     </html>
   );
