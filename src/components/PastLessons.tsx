@@ -21,7 +21,6 @@ export function PastLessons() {
           dueDate="Completed May 15th 2025"
           difficulty="Easy"
           creditPoints={25}
-          onBeginLesson={() => router.push('/lesson/need-to-consult-spouse')}
         />
         <LessonCard
           status="Complete"
@@ -30,7 +29,6 @@ export function PastLessons() {
           dueDate="Completed May 12th 2025"
           difficulty="Medium"
           creditPoints={40}
-          onBeginLesson={() => router.push('/lesson/price-too-high')}
         />
         <LessonCard
           status="Complete"
@@ -39,7 +37,6 @@ export function PastLessons() {
           dueDate="Completed May 8th 2025"
           difficulty="Hard"
           creditPoints={50}
-          onBeginLesson={() => router.push('/lesson/price-too-high')}
         />
       </div>
     </LessonFrame>

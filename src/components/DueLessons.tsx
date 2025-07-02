@@ -30,7 +30,6 @@ export function DueLessons() {
           dueDate="June 17th 2025"
           difficulty="Easy"
           creditPoints={25}
-          onBeginLesson={() => router.push('/lesson/need-to-consult-spouse')}
         />
         <LessonCard
           status="In progress"
@@ -39,7 +38,6 @@ export function DueLessons() {
           dueDate="June 18th 2025"
           difficulty="Medium"
           creditPoints={30}
-          onBeginLesson={() => router.push('/lesson/price-too-high')}
         />
         <LessonCard
           status="Incomplete"
@@ -48,7 +46,6 @@ export function DueLessons() {
           dueDate="June 19th 2025"
           difficulty="Hard"
           creditPoints={35}
-          onBeginLesson={() => router.push('/lesson/considering-other-options')}
         />
       </div>
     </LessonFrame>

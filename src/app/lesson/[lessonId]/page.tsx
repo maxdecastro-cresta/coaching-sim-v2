@@ -11,8 +11,9 @@ interface LessonPageProps {
   };
 }
 
-export default async function LessonPage({ params }: LessonPageProps) {
-  const lesson = lessons[params.lessonId];
+export default async function LessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
+  const { lessonId } = await params;
+  const lesson = lessons[lessonId];
 
   if (!lesson) {
     notFound();

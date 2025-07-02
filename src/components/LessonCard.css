@@ -166,6 +166,17 @@
   color: #1d4ed8;
 }
 
+.begin-lesson-btn:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.begin-lesson-btn:disabled:hover {
+  background-color: transparent;
+  color: #9ca3af;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .lesson-card {

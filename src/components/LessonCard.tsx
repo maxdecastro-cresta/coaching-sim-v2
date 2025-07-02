@@ -65,6 +65,7 @@ export function LessonCard({
         <button 
           className="begin-lesson-btn"
           onClick={onBeginLesson}
+          disabled={!onBeginLesson}
         >
           Begin Lesson
           <ChevronRight size={14} />
